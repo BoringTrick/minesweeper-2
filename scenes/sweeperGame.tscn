@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=4 uid="uid://dtobkxcuvlafg"]
+[gd_scene load_steps=3 format=3 uid="uid://dtobkxcuvlafg"]
 
 [ext_resource type="Script" uid="uid://cmihak75hngou" path="res://scenes/sweeperscene.gd" id="1_u5ekv"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://assets/tilemaps/sweepertiles.tres" id="2_efvxm"]
@@ -10,10 +10,10 @@ script = ExtResource("1_u5ekv")
 z_index = -1
 texture_filter = 1
 scale = Vector2(3, 3)
-tile_map_data = PackedByteArray("AAACAP7/AAABAAAAAAADAP7/AAACAAAAAAAEAP7/AAADAAAAAAAFAP7/AAAEAAAAAAAGAP7/AAAFAAAAAAAIAP7/AAAHAAAAAAAJAP7/AAAIAAAAAAABAP7/AAAAAAAAAAAHAP7/AAAGAAAAAAABAP//AAAAAAEAAAACAP//AAABAAEAAAADAP//AAACAAEAAAAEAP//AAADAAEAAAAFAP//AAAEAAEAAAA=")
 tile_set = ExtResource("2_efvxm")
 
 [node name="Camera2D" type="Camera2D" parent="minesNumbersLayer"]
+scale = Vector2(0.333333, 0.333333)
 
 [node name="minesCoverLayer" type="TileMapLayer" parent="."]
 texture_filter = 1

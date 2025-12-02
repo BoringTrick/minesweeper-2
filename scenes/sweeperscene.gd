@@ -2,6 +2,7 @@ extends Node2D
 
 @onready var numberLayer = $minesNumbersLayer
 @onready var coverLayer = $minesCoverLayer
+@onready var camera = $minesNumbersLayer/Camera2D
 
 #useful resources:
 # https://forum.godotengine.org/t/how-to-declare-2d-arrays-matrices-in-gdscript/38638/5
@@ -63,6 +64,11 @@ func _ready():
 			else:
 				numberLayer.set_cell(Vector2i(x, y), 0, Vector2i(2, 1), 0)
 			coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(0, 1), 0)
+	var used_rect: Rect2i = numberLayer.get_used_rect()
+	var top_left: Vector2i = to_global(numberLayer.map_to_local(Vector2i(used_rect.position.x,used_rect.position.y)))
+	var bottom_right: Vector2i = to_global(numberLayer.map_to_local(Vector2i(used_rect.position.x+used_rect.size.x,used_rect.position.y+used_rect.size.y)))
+	
+	camera.offset = Vector2((top_left.x+bottom_right.x)/2.0,(top_left.y+bottom_right.y)/2.0) + Vector2(150,150)
 
 func _unhandled_input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:

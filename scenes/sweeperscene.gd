@@ -71,7 +71,7 @@ func _ready():
 	camera.offset = Vector2((top_left.x+bottom_right.x)/2.0,(top_left.y+bottom_right.y)/2.0) + Vector2(150,150)
 
 func _unhandled_input(event):
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+	if event is InputEventMouseButton and event.pressed and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
 		# Get the global mouse position
 		var globalMousePos = get_global_mouse_position()
 		
@@ -82,10 +82,15 @@ func _unhandled_input(event):
 		var clickedTile = coverLayer.local_to_map(localMousePos)
 		
 		if isValid(clickedTile.x, clickedTile.y) and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(-1,-1):
-			coverLayer.erase_cell(clickedTile)
-			if gridArray[(clickedTile.y * x_size) + clickedTile.x] == 0:
-				revealNeighbors(clickedTile.x, clickedTile.y)
-		
+			if event.button_index == MOUSE_BUTTON_LEFT and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
+				coverLayer.erase_cell(clickedTile)
+				if gridArray[(clickedTile.y * x_size) + clickedTile.x] == 0:
+					revealNeighbors(clickedTile.x, clickedTile.y)
+			elif event.button_index == MOUSE_BUTTON_RIGHT:
+				if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
+					coverLayer.set_cell(clickedTile, 0, Vector2i(1, 1), 0)
+				else:
+					coverLayer.set_cell(clickedTile, 0, Vector2i(0, 1), 0)
 		print("Global mouse position:", globalMousePos)
 		print("Local mouse position:", localMousePos)
 		print("Tile coordinates:", clickedTile)

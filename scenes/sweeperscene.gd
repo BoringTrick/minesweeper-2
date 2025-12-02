@@ -1,8 +1,16 @@
-extends TileMapLayer
+extends Node2D
 
-var x_size = 1
-var y_size = 20
-var mineCount = 8
+@onready var numberLayer = $minesNumbersLayer
+@onready var minesCoverLayer = $minesCoverLayer
+
+#useful resources:
+# https://forum.godotengine.org/t/how-to-declare-2d-arrays-matrices-in-gdscript/38638/5
+# https://forum.godotengine.org/t/create-tilemap-from-code-in-godot-4/2972
+# https://www.geeksforgeeks.org/cpp/cpp-implementation-minesweeper-game/
+
+var x_size = 10
+var y_size = 10
+var mineCount = 17
 var cells  = x_size * y_size
 
 var gridArray = []
@@ -39,6 +47,6 @@ func _ready():
 						if gridArray[(newCol * x_size) + newRow] == -1:
 							mineAmount = mineAmount + 1
 				gridArray[(y * x_size) + x] = mineAmount
-				self.set_cell(Vector2i(x, y), 0, Vector2i(mineAmount, 0), 0)
+				numberLayer.set_cell(Vector2i(x, y), 0, Vector2i(mineAmount, 0), 0)
 			else:
-				self.set_cell(Vector2i(x, y), 0, Vector2i(2, 1), 0)
+				numberLayer.set_cell(Vector2i(x, y), 0, Vector2i(2, 1), 0)

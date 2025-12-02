@@ -1,13 +1,18 @@
 [gd_scene load_steps=3 format=4 uid="uid://dtobkxcuvlafg"]
 
-[ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://assets/tilemaps/sweepertiles.tres" id="1_errlg"]
-[ext_resource type="Script" uid="uid://1r260u6yv2i" path="res://scenes/mines_numbers_layer.gd" id="2_bl13t"]
+[ext_resource type="Script" uid="uid://cmihak75hngou" path="res://scenes/sweeperscene.gd" id="1_u5ekv"]
+[ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://assets/tilemaps/sweepertiles.tres" id="2_efvxm"]
 
 [node name="Node2D" type="Node2D"]
+script = ExtResource("1_u5ekv")
 
 [node name="minesNumbersLayer" type="TileMapLayer" parent="."]
+z_index = -1
 texture_filter = 1
 scale = Vector2(3, 3)
 tile_map_data = PackedByteArray("AAACAP7/AAABAAAAAAADAP7/AAACAAAAAAAEAP7/AAADAAAAAAAFAP7/AAAEAAAAAAAGAP7/AAAFAAAAAAAIAP7/AAAHAAAAAAAJAP7/AAAIAAAAAAABAP7/AAAAAAAAAAAHAP7/AAAGAAAAAAABAP//AAAAAAEAAAACAP//AAABAAEAAAADAP//AAACAAEAAAAEAP//AAADAAEAAAAFAP//AAAEAAEAAAA=")
-tile_set = ExtResource("1_errlg")
-script = ExtResource("2_bl13t")
+tile_set = ExtResource("2_efvxm")
+
+[node name="minesCoverLayer" type="TileMapLayer" parent="."]
+scale = Vector2(3, 3)
+tile_set = ExtResource("2_efvxm")

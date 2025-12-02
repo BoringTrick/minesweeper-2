@@ -13,6 +13,9 @@ scale = Vector2(3, 3)
 tile_map_data = PackedByteArray("AAACAP7/AAABAAAAAAADAP7/AAACAAAAAAAEAP7/AAADAAAAAAAFAP7/AAAEAAAAAAAGAP7/AAAFAAAAAAAIAP7/AAAHAAAAAAAJAP7/AAAIAAAAAAABAP7/AAAAAAAAAAAHAP7/AAAGAAAAAAABAP//AAAAAAEAAAACAP//AAABAAEAAAADAP//AAACAAEAAAAEAP//AAADAAEAAAAFAP//AAAEAAEAAAA=")
 tile_set = ExtResource("2_efvxm")
 
+[node name="Camera2D" type="Camera2D" parent="minesNumbersLayer"]
+
 [node name="minesCoverLayer" type="TileMapLayer" parent="."]
+texture_filter = 1
 scale = Vector2(3, 3)
 tile_set = ExtResource("2_efvxm")

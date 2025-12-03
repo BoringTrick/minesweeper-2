@@ -13,6 +13,7 @@ extends Node2D
 var xSize = 10
 var ySize = 10
 var mineCount = 17
+var gameState = "setup"
 
 # used for the tiles around a tile calculation in various contexts
 var dx = [-1, -1, -1, 0, 0, 1, 1, 1]
@@ -48,6 +49,17 @@ func addMine():
 		addMine()
 	else:
 		gridArray[(mineY * xSize) + mineX] = -1
+
+# set the game to the game over state
+func gameOver(incorrectTile):
+	gameState = "ended"
+	numberLayer.set_cell(incorrectTile, 0, Vector2i(3, 1), 0)
+	for y in ySize:
+		for x in xSize:
+			if Vector2i(x, y) != incorrectTile and gridArray[(y * xSize) + x] == -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) != Vector2i(1,1):
+				coverLayer.erase_cell(Vector2i(x, y))
+			elif gridArray[(y * xSize) + x] != -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) == Vector2i(1,1):
+				coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(4, 1), 0)
 
 # setup the minefield when script loads
 func _ready():
@@ -85,28 +97,32 @@ func _ready():
 	var bottom_right: Vector2i = to_global(numberLayer.map_to_local(Vector2i(used_rect.position.x+used_rect.size.x,used_rect.position.y+used_rect.size.y)))
 	
 	camera.offset = Vector2((top_left.x+bottom_right.x)/2.0,(top_left.y+bottom_right.y)/2.0) + Vector2(150,150)
+	gameState = "playing"
 
 # handle input events (revealing tiles, flagging/unflagging)
 func _unhandled_input(event):
 	if event is InputEventMouseButton and event.pressed and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
-		# get the global mouse position
-		var globalMousePos = get_global_mouse_position()
-		# convert the global mouse position to local coordinates for the tileMapLayer
-		var localMousePos = coverLayer.to_local(globalMousePos)
-		# get the tile coordinates in the grid
-		var clickedTile = coverLayer.local_to_map(localMousePos)
-		
-		# handles uncovering and flagging tiles
-		if isValid(clickedTile.x, clickedTile.y) and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(-1,-1):
-			if event.button_index == MOUSE_BUTTON_LEFT and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
-				coverLayer.erase_cell(clickedTile)
-				if gridArray[(clickedTile.y * xSize) + clickedTile.x] == 0:
-					revealNeighbors(clickedTile.x, clickedTile.y)
-			elif event.button_index == MOUSE_BUTTON_RIGHT:
-				if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
-					coverLayer.set_cell(clickedTile, 0, Vector2i(1, 1), 0)
-				else:
-					coverLayer.set_cell(clickedTile, 0, Vector2i(0, 1), 0)
-		#print("Global mouse position:", globalMousePos)
-		#print("Local mouse position:", localMousePos)
-		#print("Tile coordinates:", clickedTile)
+		if gameState == "playing":
+			# get the global mouse position
+			var globalMousePos = get_global_mouse_position()
+			# convert the global mouse position to local coordinates for the tileMapLayer
+			var localMousePos = coverLayer.to_local(globalMousePos)
+			# get the tile coordinates in the grid
+			var clickedTile = coverLayer.local_to_map(localMousePos)
+			
+			# handles uncovering and flagging tiles
+			if isValid(clickedTile.x, clickedTile.y) and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(-1,-1):
+				if event.button_index == MOUSE_BUTTON_LEFT and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
+					coverLayer.erase_cell(clickedTile)
+					if gridArray[(clickedTile.y * xSize) + clickedTile.x] == 0:
+						revealNeighbors(clickedTile.x, clickedTile.y)
+					elif gridArray[(clickedTile.y * xSize) + clickedTile.x] == -1:
+						gameOver(clickedTile)
+				elif event.button_index == MOUSE_BUTTON_RIGHT:
+					if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
+						coverLayer.set_cell(clickedTile, 0, Vector2i(1, 1), 0)
+					else:
+						coverLayer.set_cell(clickedTile, 0, Vector2i(0, 1), 0)
+			#print("Global mouse position:", globalMousePos)
+			#print("Local mouse position:", localMousePos)
+			#print("Tile coordinates:", clickedTile)

@@ -50,7 +50,7 @@ func addMine():
 	else:
 		gridArray[(mineY * xSize) + mineX] = -1
 
-# set the game to the game over state
+# set the game to the game over state and show all mines + incorrect flags
 func gameOver(incorrectTile):
 	gameState = "ended"
 	numberLayer.set_cell(incorrectTile, 0, Vector2i(3, 1), 0)
@@ -91,12 +91,26 @@ func _ready():
 				numberLayer.set_cell(Vector2i(x, y), 0, Vector2i(2, 1), 0)
 			# add a cover cell ontop of the tile
 			coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(0, 1), 0)
-	# wip camera centering code which doesn't work well, fixing soon
-	var used_rect: Rect2i = numberLayer.get_used_rect()
-	var top_left: Vector2i = to_global(numberLayer.map_to_local(Vector2i(used_rect.position.x,used_rect.position.y)))
-	var bottom_right: Vector2i = to_global(numberLayer.map_to_local(Vector2i(used_rect.position.x+used_rect.size.x,used_rect.position.y+used_rect.size.y)))
 	
-	camera.offset = Vector2((top_left.x+bottom_right.x)/2.0,(top_left.y+bottom_right.y)/2.0) + Vector2(150,150)
+	# centers the camera on the board
+	# do NOT ask me why *48 works. I couldn't answer why.
+	var usedRect: Rect2i = numberLayer.get_used_rect()
+	var cameraRect = camera.get_viewport_rect()
+	
+	# the int and float is to get rid of a console error for integer division
+	var xOffset = int((float(usedRect.size.x - usedRect.position.x) * 48) / 2)
+	var yOffset = int((float(usedRect.size.y - usedRect.position.y) * 48) / 2)
+	camera.offset = Vector2i(xOffset, yOffset)
+	
+	# get the ratio of camera size to board size and zoom accordingly
+	# the number divided by is the normal x and y cameraRect size / 10
+	var xRatio = (cameraRect.size.x / usedRect.size.x) / 115.2
+	var yRatio = (cameraRect.size.y / usedRect.size.y) / 64.8
+	if xRatio < yRatio:
+		camera.zoom = Vector2(xRatio,xRatio)
+	else:
+		camera.zoom = Vector2(yRatio,yRatio)
+	
 	gameState = "playing"
 
 # handle input events (revealing tiles, flagging/unflagging)

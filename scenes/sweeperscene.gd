@@ -14,8 +14,13 @@ var xSize = 10
 var ySize = 10
 var mineCount = 17
 
+# internal variables
 # internal gamestate used for various checks
 var gameState = "setup"
+
+# tiles left to reveal to win the game
+# decrements whenever a tils is revealed
+var tilesLeft = (xSize * ySize) - mineCount
 
 # used for the tiles around a tile calculation in various contexts
 var dx = [-1, -1, -1, 0, 0, 1, 1, 1]
@@ -40,6 +45,7 @@ func revealNeighbors(row, col):
 			# if the cover tile isn't empty (very important, infinite loop if not here)
 			if coverLayer.get_cell_atlas_coords(Vector2i(newRow, newCol)) != Vector2i(-1,-1):
 				coverLayer.erase_cell(Vector2i(newRow, newCol))
+				tilesLeft -= 1
 				if gridArray[(newCol * xSize) + newRow] == 0:
 					revealNeighbors(newRow, newCol)
 
@@ -64,6 +70,10 @@ func gameOver(incorrectTile):
 				coverLayer.erase_cell(Vector2i(x, y))
 			elif gridArray[(y * xSize) + x] != -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) == Vector2i(1,1):
 				coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(4, 1), 0)
+
+# runs when the game wins via uncovering every non-mine
+func winGame():
+	gameState = "won"
 
 # this function fills out the board, with the clickedTile being safe
 # from mines
@@ -140,9 +150,11 @@ func _unhandled_input(event):
 			if isValid(clickedTile.x, clickedTile.y) and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(-1,-1) and gameState == "playing":
 				if event.button_index == MOUSE_BUTTON_LEFT and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 					coverLayer.erase_cell(clickedTile)
-					if gridArray[(clickedTile.y * xSize) + clickedTile.x] == 0:
-						revealNeighbors(clickedTile.x, clickedTile.y)
-					elif gridArray[(clickedTile.y * xSize) + clickedTile.x] == -1:
+					if gridArray[(clickedTile.y * xSize) + clickedTile.x] != -1:
+						tilesLeft -= 1
+						if gridArray[(clickedTile.y * xSize) + clickedTile.x] == 0:
+							revealNeighbors(clickedTile.x, clickedTile.y)
+					else:
 						gameOver(clickedTile)
 				elif event.button_index == MOUSE_BUTTON_RIGHT:
 					if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
@@ -152,8 +164,13 @@ func _unhandled_input(event):
 			elif isValid(clickedTile.x, clickedTile.y) and gameState == "before" and event.button_index == MOUSE_BUTTON_LEFT:
 				populateBoard(clickedTile)
 				coverLayer.erase_cell(clickedTile)
+				tilesLeft -= 1
 				if gridArray[(clickedTile.y * xSize) + clickedTile.x] == 0:
 					revealNeighbors(clickedTile.x, clickedTile.y)
+			
+			# ^^^ runs if the above code makes the tilesLeft hit 0
+			if tilesLeft <= 0:
+				winGame()
 			#print("Global mouse position:", globalMousePos)
 			#print("Local mouse position:", localMousePos)
 			#print("Tile coordinates:", clickedTile)

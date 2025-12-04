@@ -1,9 +1,36 @@
-[gd_scene load_steps=5 format=3 uid="uid://dtobkxcuvlafg"]
+[gd_scene load_steps=14 format=3 uid="uid://dtobkxcuvlafg"]
 
-[ext_resource type="Script" uid="uid://cmihak75hngou" path="res://scenes/sweeperscene.gd" id="1_u5ekv"]
-[ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://assets/tilemaps/sweepertiles.tres" id="2_efvxm"]
-[ext_resource type="Script" uid="uid://c1wvrqymeaeij" path="res://scenes/cameracontrol.gd" id="3_efvxm"]
-[ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://assets/labelSettings/GUIText.tres" id="3_u5ekv"]
+[ext_resource type="Script" uid="uid://cmihak75hngou" path="res://scripts/sweeperscene.gd" id="1_u5ekv"]
+[ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://gameObjects/tilemaps/sweepertiles.tres" id="2_efvxm"]
+[ext_resource type="Script" uid="uid://c1wvrqymeaeij" path="res://scripts/cameracontrol.gd" id="3_efvxm"]
+[ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://gameObjects/labelSettings/GUIText.tres" id="3_u5ekv"]
+[ext_resource type="Texture2D" uid="uid://d4nmwmycbw40p" path="res://assets/backgrounds/stars/0.png" id="5_q0ai1"]
+[ext_resource type="Texture2D" uid="uid://dw8gk604x4t0y" path="res://assets/backgrounds/stars/1.png" id="6_22kv3"]
+[ext_resource type="Texture2D" uid="uid://c2fdvvpir0j1u" path="res://assets/backgrounds/stars/2.png" id="7_okf47"]
+[ext_resource type="Texture2D" uid="uid://b7x6ltatgervi" path="res://assets/backgrounds/stars/3.png" id="8_vxvqk"]
+[ext_resource type="Texture2D" uid="uid://c2no66yknxdph" path="res://assets/backgrounds/stars/4.png" id="9_8fi7x"]
+[ext_resource type="Texture2D" uid="uid://bk124ygy2eifp" path="res://assets/backgrounds/stars/5.png" id="10_gxunc"]
+[ext_resource type="Texture2D" uid="uid://vk5a7ohiip8e" path="res://assets/backgrounds/stars/6.png" id="11_mroyu"]
+[ext_resource type="Texture2D" uid="uid://dolr88nwmwxht" path="res://assets/backgrounds/stars/7.png" id="12_rxw5c"]
+
+[sub_resource type="AnimatedTexture" id="AnimatedTexture_efvxm"]
+frames = 8
+speed_scale = 5.0
+frame_0/texture = ExtResource("5_q0ai1")
+frame_1/texture = ExtResource("6_22kv3")
+frame_1/duration = 1.0
+frame_2/texture = ExtResource("7_okf47")
+frame_2/duration = 1.0
+frame_3/texture = ExtResource("8_vxvqk")
+frame_3/duration = 1.0
+frame_4/texture = ExtResource("9_8fi7x")
+frame_4/duration = 1.0
+frame_5/texture = ExtResource("10_gxunc")
+frame_5/duration = 1.0
+frame_6/texture = ExtResource("11_mroyu")
+frame_6/duration = 1.0
+frame_7/texture = ExtResource("12_rxw5c")
+frame_7/duration = 1.0
 
 [node name="sweeperRoot" type="Node2D"]
 script = ExtResource("1_u5ekv")
@@ -26,13 +53,15 @@ tile_set = ExtResource("2_efvxm")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="flagsLeftLabel" type="Label" parent="CanvasLayer"]
-offset_left = 2.0
-offset_right = 240.0
+texture_filter = 1
+offset_left = 5.0
+offset_right = 340.0
 offset_bottom = 35.0
 text = "Flags Remaining: 99"
 label_settings = ExtResource("3_u5ekv")
 
 [node name="timerLabel" type="Label" parent="CanvasLayer"]
+texture_filter = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -43,3 +72,18 @@ grow_horizontal = 0
 text = "00:00.00"
 label_settings = ExtResource("3_u5ekv")
 horizontal_alignment = 2
+
+[node name="backgroundLayer" type="CanvasLayer" parent="."]
+layer = -10
+
+[node name="TextureRect" type="TextureRect" parent="backgroundLayer"]
+show_behind_parent = true
+z_index = -10
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AnimatedTexture_efvxm")
+stretch_mode = 1

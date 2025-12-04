@@ -1,0 +1,9 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://byulm3hb85ui8"]
+
+[ext_resource type="FontFile" uid="uid://b0xuck2yind18" path="res://assets/fonts/Kenney Rocket.ttf" id="1_milrj"]
+
+[resource]
+font = ExtResource("1_milrj")
+font_size = 25
+outline_size = 5
+outline_color = Color(0, 0, 0, 1)

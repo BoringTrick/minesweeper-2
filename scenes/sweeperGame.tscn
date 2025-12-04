@@ -1,8 +1,8 @@
 [gd_scene load_steps=14 format=3 uid="uid://dtobkxcuvlafg"]
 
-[ext_resource type="Script" uid="uid://cmihak75hngou" path="res://scripts/sweeperscene.gd" id="1_u5ekv"]
+[ext_resource type="Script" uid="uid://cmihak75hngou" path="res://scripts/sweeperGame.gd" id="1_u5ekv"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://gameObjects/tilemaps/sweepertiles.tres" id="2_efvxm"]
-[ext_resource type="Script" uid="uid://c1wvrqymeaeij" path="res://scripts/cameracontrol.gd" id="3_efvxm"]
+[ext_resource type="Script" uid="uid://c1wvrqymeaeij" path="res://scripts/cameraControl.gd" id="3_efvxm"]
 [ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://gameObjects/labelSettings/GUIText.tres" id="3_u5ekv"]
 [ext_resource type="Texture2D" uid="uid://d4nmwmycbw40p" path="res://assets/backgrounds/stars/0.png" id="5_q0ai1"]
 [ext_resource type="Texture2D" uid="uid://dw8gk604x4t0y" path="res://assets/backgrounds/stars/1.png" id="6_22kv3"]
@@ -41,7 +41,7 @@ texture_filter = 1
 scale = Vector2(3, 3)
 tile_set = ExtResource("2_efvxm")
 
-[node name="Camera2D" type="Camera2D" parent="minesNumbersLayer"]
+[node name="camera" type="Camera2D" parent="minesNumbersLayer"]
 scale = Vector2(0.333333, 0.333333)
 script = ExtResource("3_efvxm")
 
@@ -50,9 +50,9 @@ texture_filter = 1
 scale = Vector2(3, 3)
 tile_set = ExtResource("2_efvxm")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="uiLayer" type="CanvasLayer" parent="."]
 
-[node name="flagsLeftLabel" type="Label" parent="CanvasLayer"]
+[node name="flagsLeftLabel" type="Label" parent="uiLayer"]
 texture_filter = 1
 offset_left = 5.0
 offset_right = 340.0
@@ -60,7 +60,7 @@ offset_bottom = 35.0
 text = "Flags Remaining: 99"
 label_settings = ExtResource("3_u5ekv")
 
-[node name="timerLabel" type="Label" parent="CanvasLayer"]
+[node name="timerLabel" type="Label" parent="uiLayer"]
 texture_filter = 1
 anchors_preset = 1
 anchor_left = 1.0

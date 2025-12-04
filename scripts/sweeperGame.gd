@@ -2,9 +2,9 @@ extends Node2D
 
 @onready var numberLayer = $minesNumbersLayer
 @onready var coverLayer = $minesCoverLayer
-@onready var camera = $minesNumbersLayer/Camera2D
-@onready var timerLabel = $CanvasLayer/timerLabel
-@onready var flagLabel = $CanvasLayer/flagsLeftLabel
+@onready var camera = $minesNumbersLayer/camera
+@onready var timerLabel = $uiLayer/timerLabel
+@onready var flagLabel = $uiLayer/flagsLeftLabel
 
 # useful resources:
 # https://forum.godotengine.org/t/how-to-declare-2d-arrays-matrices-in-gdscript/38638/5

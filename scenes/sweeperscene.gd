@@ -3,6 +3,8 @@ extends Node2D
 @onready var numberLayer = $minesNumbersLayer
 @onready var coverLayer = $minesCoverLayer
 @onready var camera = $minesNumbersLayer/Camera2D
+@onready var timerLabel = $CanvasLayer/timerLabel
+@onready var flagLabel = $CanvasLayer/flagsLeftLabel
 
 # useful resources:
 # https://forum.godotengine.org/t/how-to-declare-2d-arrays-matrices-in-gdscript/38638/5
@@ -17,6 +19,9 @@ extends Node2D
 # internal variables
 # internal gamestate used for various checks
 var gameState = "setup"
+
+# used for flag amount counter in top left
+var flagsLeft = mineCount
 
 # tiles left to reveal to win the game
 # decrements whenever a tils is revealed
@@ -133,6 +138,9 @@ func _ready():
 	else:
 		camera.zoom = Vector2(yRatio,yRatio)
 	
+	# set up the flag label
+	flagLabel.text = "Flags Remaining: " + str(flagsLeft)
+	
 	gameState = "before"
 
 # handle input events (revealing tiles, flagging/unflagging)
@@ -158,8 +166,13 @@ func _unhandled_input(event):
 						gameOver(clickedTile)
 				elif event.button_index == MOUSE_BUTTON_RIGHT:
 					if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
-						coverLayer.set_cell(clickedTile, 0, Vector2i(1, 1), 0)
+						if flagsLeft > 0:
+							flagsLeft -= 1
+							flagLabel.text = "Flags Remaining: " + str(flagsLeft)
+							coverLayer.set_cell(clickedTile, 0, Vector2i(1, 1), 0)
 					else:
+						flagsLeft += 1
+						flagLabel.text = "Flags Remaining: " + str(flagsLeft)
 						coverLayer.set_cell(clickedTile, 0, Vector2i(0, 1), 0)
 			elif isValid(clickedTile.x, clickedTile.y) and gameState == "before" and event.button_index == MOUSE_BUTTON_LEFT:
 				populateBoard(clickedTile)
@@ -171,16 +184,12 @@ func _unhandled_input(event):
 			# ^^^ runs if the above code makes the tilesLeft hit 0
 			if tilesLeft <= 0:
 				winGame()
-			#print("Global mouse position:", globalMousePos)
-			#print("Local mouse position:", localMousePos)
-			#print("Tile coordinates:", clickedTile)
 
 # Variables for the timer on the top left
 var timeElapsed = 0.0
 var mins
 var secs
 var millis
-@onready var timerLabel = $CanvasLayer/timerLabel
 
 # updates the timer if it's in the playing state
 func _process(_delta):

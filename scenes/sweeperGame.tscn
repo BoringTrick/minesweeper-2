@@ -4,7 +4,7 @@
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://assets/tilemaps/sweepertiles.tres" id="2_efvxm"]
 [ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://assets/labelSettings/GUIText.tres" id="3_u5ekv"]
 
-[node name="Node2D" type="Node2D"]
+[node name="sweeperRoot" type="Node2D"]
 script = ExtResource("1_u5ekv")
 
 [node name="minesNumbersLayer" type="TileMapLayer" parent="."]
@@ -23,10 +23,10 @@ tile_set = ExtResource("2_efvxm")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="minesLeftLabel" type="Label" parent="CanvasLayer"]
+[node name="flagsLeftLabel" type="Label" parent="CanvasLayer"]
 offset_right = 160.0
 offset_bottom = 23.0
-text = "Mines Remaining: 99"
+text = "Flags Remaining: 99"
 label_settings = ExtResource("3_u5ekv")
 
 [node name="timerLabel" type="Label" parent="CanvasLayer"]

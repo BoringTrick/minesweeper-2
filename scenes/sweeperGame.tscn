@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dtobkxcuvlafg"]
+[gd_scene load_steps=4 format=3 uid="uid://dtobkxcuvlafg"]
 
 [ext_resource type="Script" uid="uid://cmihak75hngou" path="res://scenes/sweeperscene.gd" id="1_u5ekv"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://assets/tilemaps/sweepertiles.tres" id="2_efvxm"]
+[ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://assets/labelSettings/GUIText.tres" id="3_u5ekv"]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_u5ekv")
@@ -19,3 +20,22 @@ scale = Vector2(0.333333, 0.333333)
 texture_filter = 1
 scale = Vector2(3, 3)
 tile_set = ExtResource("2_efvxm")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="minesLeftLabel" type="Label" parent="CanvasLayer"]
+offset_right = 160.0
+offset_bottom = 23.0
+text = "Mines Remaining: 99"
+label_settings = ExtResource("3_u5ekv")
+
+[node name="timerLabel" type="Label" parent="CanvasLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -227.0
+offset_bottom = 35.0
+grow_horizontal = 0
+text = "00:00.00"
+label_settings = ExtResource("3_u5ekv")
+horizontal_alignment = 2

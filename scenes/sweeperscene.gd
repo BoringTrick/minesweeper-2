@@ -10,9 +10,9 @@ extends Node2D
 # https://www.geeksforgeeks.org/cpp/cpp-implementation-minesweeper-game/
 
 # config for the board, gamemodes/difficulties may edit this
-var xSize = 10
-var ySize = 10
-var mineCount = 17
+@export var xSize = 10
+@export var ySize = 10
+@export var mineCount = 17
 
 # internal variables
 # internal gamestate used for various checks
@@ -174,3 +174,19 @@ func _unhandled_input(event):
 			#print("Global mouse position:", globalMousePos)
 			#print("Local mouse position:", localMousePos)
 			#print("Tile coordinates:", clickedTile)
+
+# Variables for the timer on the top left
+var timeElapsed = 0.0
+var mins
+var secs
+var millis
+@onready var timerLabel = $CanvasLayer/timerLabel
+
+# updates the timer if it's in the playing state
+func _process(_delta):
+	if gameState == "playing":
+		timeElapsed += _delta
+		mins = timeElapsed / 60
+		secs = fmod(timeElapsed, 60)
+		millis = fmod(timeElapsed, 1) * 100
+		timerLabel.text = "%02d:%02d.%02d" % [mins, secs, millis]

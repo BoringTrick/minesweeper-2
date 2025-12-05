@@ -1,6 +1,6 @@
 [gd_resource type="TileSet" load_steps=3 format=3 uid="uid://guejpwtmoju1"]
 
-[ext_resource type="Texture2D" uid="uid://dma7hhqh4ympn" path="res://assets/spritesheets/assetsTEMP.png" id="1_xfcbi"]
+[ext_resource type="Texture2D" uid="uid://dma7hhqh4ympn" path="res://Assets/SpriteSheets/TileSprites.png" id="1_xfcbi"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_mwggo"]
 resource_name = "minesweeper"

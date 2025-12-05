@@ -11,21 +11,12 @@ extends Node2D
 # https://forum.godotengine.org/t/create-tilemap-from-code-in-godot-4/2972
 # https://www.geeksforgeeks.org/cpp/cpp-implementation-minesweeper-game/
 
-# config for the board, gamemodes/difficulties may edit this
-@export var xSize = 10
-@export var ySize = 10
-@export var mineCount = 17
-
-# internal variables
-# internal gamestate used for various checks
-var gameState = "setup"
-
 # used for flag amount counter in top left
-var flagsLeft = mineCount
+var flagsLeft = gameManager.mineCount
 
 # tiles left to reveal to win the game
 # decrements whenever a tils is revealed
-var tilesLeft = (xSize * ySize) - mineCount
+var tilesLeft = (gameManager.xSize * gameManager.ySize) - gameManager.mineCount
 
 # used for the tiles around a tile calculation in various contexts
 var dx = [-1, -1, -1, 0, 0, 1, 1, 1]
@@ -36,7 +27,7 @@ var gridArray = []
 
 # returns true if the input row and column are inside the board size
 func isValid(row, col):
-	return (row >= 0) and (row < xSize) and (col >= 0) and (col < ySize)
+	return (row >= 0) and (row < gameManager.xSize) and (col >= 0) and (col < gameManager.ySize)
 
 # recursive function which reveals the neighbors of a tile
 # if the neighbor is a 0, recurse and reveal its neighbors
@@ -51,72 +42,74 @@ func revealNeighbors(row, col):
 			if coverLayer.get_cell_atlas_coords(Vector2i(newRow, newCol)) != Vector2i(-1,-1):
 				coverLayer.erase_cell(Vector2i(newRow, newCol))
 				tilesLeft -= 1
-				if gridArray[(newCol * xSize) + newRow] == 0:
+				if gridArray[(newCol * gameManager.xSize) + newRow] == 0:
 					revealNeighbors(newRow, newCol)
 
 # function which adds a mine to the array (mines are ID -1)
 # will recurse if it tries to place a mine at the clickedTile or
 # where there's already a mine
 func addMine(clickedTile):
-	var mineX = randi() % (xSize)
-	var mineY = randi() % (ySize)
-	if gridArray[(mineY * xSize) + mineX] == -1 or Vector2i(mineX, mineY) == clickedTile:
+	var mineX = randi() % (gameManager.xSize)
+	var mineY = randi() % (gameManager.ySize)
+	if gridArray[(mineY * gameManager.xSize) + mineX] == -1 or Vector2i(mineX, mineY) == clickedTile:
 		addMine(clickedTile)
 	else:
-		gridArray[(mineY * xSize) + mineX] = -1
+		gridArray[(mineY * gameManager.xSize) + mineX] = -1
 
 # set the game to the game over state and show all mines + incorrect flags
 func gameOver(incorrectTile):
-	gameState = "ended"
+	gameManager.gameState = "ended"
 	numberLayer.set_cell(incorrectTile, 0, Vector2i(3, 1), 0)
-	for y in ySize:
-		for x in xSize:
-			if Vector2i(x, y) != incorrectTile and gridArray[(y * xSize) + x] == -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) != Vector2i(1,1):
+	for y in gameManager.ySize:
+		for x in gameManager.xSize:
+			if Vector2i(x, y) != incorrectTile and gridArray[(y * gameManager.xSize) + x] == -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) != Vector2i(1,1):
 				coverLayer.erase_cell(Vector2i(x, y))
-			elif gridArray[(y * xSize) + x] != -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) == Vector2i(1,1):
+			elif gridArray[(y * gameManager.xSize) + x] != -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) == Vector2i(1,1):
 				coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(4, 1), 0)
 
 # runs when the game wins via uncovering every non-mine
 func winGame():
-	gameState = "won"
+	gameManager.gameState = "won"
 
 # this function fills out the board, with the clickedTile being safe
 # from mines
 func populateBoard(clickedTile):
 	# fill the array with nothing to start
-	for i in (xSize * ySize):
+	for i in (gameManager.xSize * gameManager.ySize):
 		gridArray.append(0)
 	
 	# add mineCount amount of mines to the field
-	for i in mineCount:
+	for i in gameManager.mineCount:
 		addMine(clickedTile)
 	
 	# this loop generates the minefield beneath the coverLayer
-	for y in ySize:
-		for x in xSize:
+	for y in gameManager.ySize:
+		for x in gameManager.xSize:
 			# count the mines in neighboring tiles if the tile isn't a mine
-			if gridArray[(y * xSize) + x] != -1:
+			if gridArray[(y * gameManager.xSize) + x] != -1:
 				var mineAmount = 0
 				for d in range(0, 8, 1):
 					var newRow = x + dx[d]
 					var newCol = y + dy[d]
 					if (isValid(newRow, newCol)):
-						if gridArray[(newCol * xSize) + newRow] == -1:
+						if gridArray[(newCol * gameManager.xSize) + newRow] == -1:
 							mineAmount = mineAmount + 1
 				# give the index an ID equal to mineAmount and set the tile's sprite
-				gridArray[(y * xSize) + x] = mineAmount
+				gridArray[(y * gameManager.xSize) + x] = mineAmount
 				numberLayer.set_cell(Vector2i(x, y), 0, Vector2i(mineAmount, 0), 0)
 			else:
 				# if its a mine, just set the tile sprite to a mine
 				numberLayer.set_cell(Vector2i(x, y), 0, Vector2i(2, 1), 0)
 	# set the game to be active after everything's generated
-	gameState = "playing"
+	gameManager.gameState = "playing"
 
 # setup the minefield when script loads
 func _ready():
+	# change the gamestate
+	gameManager.gameState = "setup"
 	# this loop generates cover cells for the entire minefield
-	for y in ySize:
-		for x in xSize:
+	for y in gameManager.ySize:
+		for x in gameManager.xSize:
 			coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(0, 1), 0)
 	
 	# centers the camera on the board
@@ -141,12 +134,12 @@ func _ready():
 	# set up the flag label
 	flagLabel.text = "Flags Remaining: " + str(flagsLeft)
 	
-	gameState = "before"
+	gameManager.gameState = "before"
 
 # handle input events (revealing tiles, flagging/unflagging)
 func _unhandled_input(event):
 	if event is InputEventMouseButton and event.pressed and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
-		if gameState == "playing" or gameState == "before":
+		if gameManager.gameState == "playing" or gameManager.gameState == "before":
 			# get the global mouse position
 			var globalMousePos = get_global_mouse_position()
 			# convert the global mouse position to local coordinates for the tileMapLayer
@@ -155,12 +148,12 @@ func _unhandled_input(event):
 			var clickedTile = coverLayer.local_to_map(localMousePos)
 			
 			# handles uncovering and flagging tiles
-			if isValid(clickedTile.x, clickedTile.y) and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(-1,-1) and gameState == "playing":
+			if isValid(clickedTile.x, clickedTile.y) and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(-1,-1) and gameManager.gameState == "playing":
 				if event.button_index == MOUSE_BUTTON_LEFT and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 					coverLayer.erase_cell(clickedTile)
-					if gridArray[(clickedTile.y * xSize) + clickedTile.x] != -1:
+					if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] != -1:
 						tilesLeft -= 1
-						if gridArray[(clickedTile.y * xSize) + clickedTile.x] == 0:
+						if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
 							revealNeighbors(clickedTile.x, clickedTile.y)
 					else:
 						gameOver(clickedTile)
@@ -174,11 +167,11 @@ func _unhandled_input(event):
 						flagsLeft += 1
 						flagLabel.text = "Flags Remaining: " + str(flagsLeft)
 						coverLayer.set_cell(clickedTile, 0, Vector2i(0, 1), 0)
-			elif isValid(clickedTile.x, clickedTile.y) and gameState == "before" and event.button_index == MOUSE_BUTTON_LEFT:
+			elif isValid(clickedTile.x, clickedTile.y) and gameManager.gameState == "before" and event.button_index == MOUSE_BUTTON_LEFT:
 				populateBoard(clickedTile)
 				coverLayer.erase_cell(clickedTile)
 				tilesLeft -= 1
-				if gridArray[(clickedTile.y * xSize) + clickedTile.x] == 0:
+				if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
 					revealNeighbors(clickedTile.x, clickedTile.y)
 			
 			# ^^^ runs if the above code makes the tilesLeft hit 0
@@ -193,7 +186,7 @@ var millis
 
 # updates the timer if it's in the playing state
 func _process(_delta):
-	if gameState == "playing":
+	if gameManager.gameState == "playing":
 		timeElapsed += _delta
 		mins = timeElapsed / 60
 		secs = fmod(timeElapsed, 60)

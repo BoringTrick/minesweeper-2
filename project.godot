@@ -11,9 +11,14 @@ config_version=5
 [application]
 
 config/name="Minesweeper 2"
-run/main_scene="res://scenes/sweeperGame.tscn"
+run/main_scene="uid://bu0llecu4l60l"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+transitionManager="*res://managers/transitionManager.tscn"
+gameManager="*res://managers/gameManager.gd"
 
 [display]
 

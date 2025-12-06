@@ -3,4 +3,58 @@
 [ext_resource type="Script" uid="uid://bm4c5ytd23usl" path="res://Managers/GameManager.gd" id="1_f2rwt"]
 
 [node name="gameManager" type="CanvasLayer"]
+process_mode = 3
+layer = 100
 script = ExtResource("1_f2rwt")
+
+[node name="pauseMenu" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.625
+offset_top = -134.0
+offset_right = 128.625
+offset_bottom = 134.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="vBoxContainer" type="VBoxContainer" parent="pauseMenu"]
+layout_mode = 2
+theme_override_constants/separation = 60
+
+[node name="pauseLabel" type="Label" parent="pauseMenu/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Paused!"
+horizontal_alignment = 1
+
+[node name="marginContainer" type="MarginContainer" parent="pauseMenu/vBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="vBoxContainer" type="VBoxContainer" parent="pauseMenu/vBoxContainer/marginContainer"]
+layout_mode = 2
+
+[node name="unpause" type="Button" parent="pauseMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+text = "Return to Board"
+
+[node name="resetBoard" type="Button" parent="pauseMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+text = "Reset Board"
+
+[node name="mainMenu" type="Button" parent="pauseMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+text = "Return to Title"
+
+[connection signal="pressed" from="pauseMenu/vBoxContainer/marginContainer/vBoxContainer/unpause" to="." method="_on_unpause_pressed"]
+[connection signal="pressed" from="pauseMenu/vBoxContainer/marginContainer/vBoxContainer/resetBoard" to="." method="_on_reset_board_pressed"]
+[connection signal="pressed" from="pauseMenu/vBoxContainer/marginContainer/vBoxContainer/mainMenu" to="." method="_on_main_menu_pressed"]

@@ -58,7 +58,7 @@ func addMine(clickedTile):
 
 # set the game to the game over state and show all mines + incorrect flags
 func gameOver(incorrectTile):
-	gameManager.gameState = "ended"
+	gameManager.updateState("ended")
 	numberLayer.set_cell(incorrectTile, 0, Vector2i(3, 1), 0)
 	for y in gameManager.ySize:
 		for x in gameManager.xSize:
@@ -69,7 +69,7 @@ func gameOver(incorrectTile):
 
 # runs when the game wins via uncovering every non-mine
 func winGame():
-	gameManager.gameState = "won"
+	gameManager.updateState("won")
 
 # this function fills out the board, with the clickedTile being safe
 # from mines
@@ -101,12 +101,12 @@ func populateBoard(clickedTile):
 				# if its a mine, just set the tile sprite to a mine
 				numberLayer.set_cell(Vector2i(x, y), 0, Vector2i(2, 1), 0)
 	# set the game to be active after everything's generated
-	gameManager.gameState = "playing"
+	gameManager.updateState("playing")
 
 # setup the minefield when script loads
 func _ready():
 	# change the gamestate
-	gameManager.gameState = "setup"
+	gameManager.updateState("setup")
 	# this loop generates cover cells for the entire minefield
 	for y in gameManager.ySize:
 		for x in gameManager.xSize:
@@ -134,11 +134,18 @@ func _ready():
 	# set up the flag label
 	flagLabel.text = "Flags Remaining: " + str(flagsLeft)
 	
-	gameManager.gameState = "before"
+	gameManager.updateState("before")
 
-# handle input events (revealing tiles, flagging/unflagging)
-func _unhandled_input(event):
-	if event is InputEventMouseButton and event.pressed and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
+# Variables for the timer on the top left
+var timeElapsed = 0.0
+var mins
+var secs
+var millis
+
+# updates the timer and handles input events
+func _process(_delta):
+	# handles input events (revealing tiles, flagging/unflagging)
+	if Input.is_action_just_pressed("revealTile") or Input.is_action_just_pressed("flagTile"):
 		if gameManager.gameState == "playing" or gameManager.gameState == "before":
 			# get the global mouse position
 			var globalMousePos = get_global_mouse_position()
@@ -149,7 +156,7 @@ func _unhandled_input(event):
 			
 			# handles uncovering and flagging tiles
 			if isValid(clickedTile.x, clickedTile.y) and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(-1,-1) and gameManager.gameState == "playing":
-				if event.button_index == MOUSE_BUTTON_LEFT and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
+				if Input.is_action_just_pressed("revealTile") and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 					coverLayer.erase_cell(clickedTile)
 					if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] != -1:
 						tilesLeft -= 1
@@ -157,7 +164,7 @@ func _unhandled_input(event):
 							revealNeighbors(clickedTile.x, clickedTile.y)
 					else:
 						gameOver(clickedTile)
-				elif event.button_index == MOUSE_BUTTON_RIGHT:
+				elif Input.is_action_just_pressed("flagTile"):
 					if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 						if flagsLeft > 0:
 							flagsLeft -= 1
@@ -167,7 +174,7 @@ func _unhandled_input(event):
 						flagsLeft += 1
 						flagLabel.text = "Flags Remaining: " + str(flagsLeft)
 						coverLayer.set_cell(clickedTile, 0, Vector2i(0, 1), 0)
-			elif isValid(clickedTile.x, clickedTile.y) and gameManager.gameState == "before" and event.button_index == MOUSE_BUTTON_LEFT:
+			elif isValid(clickedTile.x, clickedTile.y) and gameManager.gameState == "before" and Input.is_action_just_pressed("revealTile"):
 				populateBoard(clickedTile)
 				coverLayer.erase_cell(clickedTile)
 				tilesLeft -= 1
@@ -177,15 +184,8 @@ func _unhandled_input(event):
 			# ^^^ runs if the above code makes the tilesLeft hit 0
 			if tilesLeft <= 0:
 				winGame()
-
-# Variables for the timer on the top left
-var timeElapsed = 0.0
-var mins
-var secs
-var millis
-
-# updates the timer if it's in the playing state
-func _process(_delta):
+	
+	# timer code for the top right timer
 	if gameManager.gameState == "playing":
 		timeElapsed += _delta
 		mins = timeElapsed / 60

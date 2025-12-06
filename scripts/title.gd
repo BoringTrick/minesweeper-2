@@ -1,6 +1,5 @@
 extends Node2D
 
-@onready var mainGame = load("res://scenes/sweeperGame.tscn")
 @onready var playPanel = $titleUI/playPanel
 @onready var mainMenuVbox = $titleUI/VBoxContainer
 @onready var difficultyLabel = $titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer/difficultyDetails
@@ -41,4 +40,12 @@ func _on_hard_select_pressed():
 	updateLabel()
 
 func _on_start_game_pressed():
-	transitionManager.load_scene(mainGame)
+	transitionManager.load_scene(gameManager.mainGame)
+
+func _ready():
+	gameManager.updateState("title")
+	gameManager.difficulty = "Easy"
+	gameManager.xSize = 9
+	gameManager.ySize = 9
+	gameManager.mineCount = 10
+	updateLabel()

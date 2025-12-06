@@ -14,6 +14,7 @@ func _ready():
 
 # You can call this function from any script by doing SceneTransition.load_scene(target_scene)
 func load_scene(targetScene: PackedScene):
+	gameManager.gameState = "transition"
 	match transitionType:
 		state.FADE:
 			transition_animation("fade", targetScene)

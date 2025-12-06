@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://bu0llecu4l60l"]
 
 [ext_resource type="Script" uid="uid://d65llrk5v5av" path="res://Scripts/Title.gd" id="1_aa56r"]
-[ext_resource type="Texture2D" uid="uid://cjs2q4vqxtln5" path="res://Assets/Static/Logo.png" id="2_agd63"]
+[ext_resource type="Texture2D" uid="uid://bmd7rjpvyiiry" path="res://Assets/Static/Logo.png" id="2_agd63"]
 [ext_resource type="ButtonGroup" uid="uid://dqgm5n3xmwas1" path="res://Scenes/TitleDifficultyGroup.tres" id="3_mh4yb"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://GameObjects/Tilemaps/SweeperTiles.tres" id="4_wq2ky"]
 [ext_resource type="Script" uid="uid://ceydlmg8rbpsi" path="res://Scripts/MenuBoard.gd" id="5_uth7j"]
@@ -140,9 +140,8 @@ fit_to_longest_item = false
 item_count = 3
 popup/item_0/text = "Classic"
 popup/item_0/id = 0
-popup/item_1/text = "Timed (WIP)"
+popup/item_1/text = "Timed"
 popup/item_1/id = 1
-popup/item_1/disabled = true
 popup/item_2/text = "Enemies (WIP)"
 popup/item_2/id = 2
 popup/item_2/disabled = true
@@ -173,3 +172,4 @@ script = ExtResource("5_uth7j")
 [connection signal="pressed" from="titleUI/playPanel/VBoxContainer/MarginContainer/HBoxContainer/hardSelect" to="." method="_on_hard_select_pressed"]
 [connection signal="pressed" from="titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer/startGame" to="." method="_on_start_game_pressed"]
 [connection signal="pressed" from="titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer/exitMenu" to="." method="_on_exit_menu_pressed"]
+[connection signal="item_selected" from="titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer2/gamemode" to="." method="_on_gamemode_item_selected"]

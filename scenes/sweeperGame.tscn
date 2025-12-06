@@ -1,10 +1,11 @@
-[gd_scene load_steps=14 format=3 uid="uid://dtobkxcuvlafg"]
+[gd_scene load_steps=15 format=3 uid="uid://dtobkxcuvlafg"]
 
 [ext_resource type="Script" uid="uid://cmihak75hngou" path="res://Scripts/SweeperGame.gd" id="1_p5k5w"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://GameObjects/Tilemaps/SweeperTiles.tres" id="2_ve1wu"]
 [ext_resource type="Script" uid="uid://c1wvrqymeaeij" path="res://Scripts/CameraControl.gd" id="3_ry8e1"]
 [ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://GameObjects/LabelSettings/GUIText.tres" id="4_1jkco"]
 [ext_resource type="Texture2D" uid="uid://d4nmwmycbw40p" path="res://Assets/Backgrounds/Stars/0.png" id="5_bfip3"]
+[ext_resource type="Texture2D" uid="uid://bkbhu4s6kw7fm" path="res://Assets/Static/timericon.png" id="5_ve1wu"]
 [ext_resource type="Texture2D" uid="uid://dw8gk604x4t0y" path="res://Assets/Backgrounds/Stars/1.png" id="6_n3lgt"]
 [ext_resource type="Texture2D" uid="uid://c2fdvvpir0j1u" path="res://Assets/Backgrounds/Stars/2.png" id="7_kvl84"]
 [ext_resource type="Texture2D" uid="uid://b7x6ltatgervi" path="res://Assets/Backgrounds/Stars/3.png" id="8_7ln24"]
@@ -72,6 +73,20 @@ text = "00:00.00"
 label_settings = ExtResource("4_1jkco")
 horizontal_alignment = 2
 
+[node name="timedModeIcon" type="TextureRect" parent="uiLayer"]
+visible = false
+texture_filter = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -222.0
+offset_top = -7.0
+offset_right = -131.0
+offset_bottom = 81.0
+grow_horizontal = 0
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("5_ve1wu")
+
 [node name="backgroundLayer" type="CanvasLayer" parent="."]
 layer = -10
 
@@ -86,3 +101,8 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("AnimatedTexture_efvxm")
 stretch_mode = 1
+
+[node name="timer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="timer" to="." method="_on_timer_timeout"]

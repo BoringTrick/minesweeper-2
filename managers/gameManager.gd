@@ -8,9 +8,11 @@ var ySize = 9
 var mineCount = 10
 var previousState = "none"
 var gameState = "title"
+var timedMineStartSec = 4
 @onready var mainGame = load("res://Scenes/SweeperGame.tscn")
 @onready var titleScreen = load("res://Scenes/Title.tscn")
 
+# updates the internal game state
 func updateState(newState):
 	previousState = gameState
 	gameState = newState
@@ -25,12 +27,14 @@ func togglePause():
 		get_tree().paused = false
 		$pauseMenu.hide()
 
-func _on_unpause_pressed():
-	togglePause()
-
+# handle opening the pause menu here
 func _process(_delta):
 	if Input.is_action_just_pressed("pause") and ((gameState != "title" and gameState != "transition")  or $pauseMenu.visible == true):
 		togglePause()
+
+# on button pressed functions, most are self explanitory
+func _on_unpause_pressed():
+	togglePause()
 
 func _on_reset_board_pressed():
 	togglePause()

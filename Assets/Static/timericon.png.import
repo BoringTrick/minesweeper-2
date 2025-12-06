@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmd7rjpvyiiry"
-path="res://.godot/imported/Logo.png-59add2666c252e229f19d8e8b75aa438.ctex"
+uid="uid://bkbhu4s6kw7fm"
+path="res://.godot/imported/timericon.png-6147ff2799f328e56a4ac386df81e460.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Static/Logo.png"
-dest_files=["res://.godot/imported/Logo.png-59add2666c252e229f19d8e8b75aa438.ctex"]
+source_file="res://Assets/Static/timericon.png"
+dest_files=["res://.godot/imported/timericon.png-6147ff2799f328e56a4ac386df81e460.ctex"]
 
 [params]
 

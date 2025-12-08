@@ -29,7 +29,7 @@ func togglePause():
 
 # handle opening the pause menu here
 func _process(_delta):
-	if Input.is_action_just_pressed("pause") and ((gameState != "title" and gameState != "transition")  or $pauseMenu.visible == true):
+	if Input.is_action_just_pressed("pause") and ((gameState != "title" and gameState != "transition" and gameState != "won" and gameState != "ended")  or $pauseMenu.visible == true):
 		togglePause()
 
 # on button pressed functions, most are self explanitory

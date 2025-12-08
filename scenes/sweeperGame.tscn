@@ -87,6 +87,55 @@ grow_horizontal = 0
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("5_ve1wu")
 
+[node name="endMenu" type="PanelContainer" parent="uiLayer"]
+visible = false
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -185.0
+offset_right = 265.25
+offset_bottom = 185.0
+grow_vertical = 2
+
+[node name="vBoxContainer" type="VBoxContainer" parent="uiLayer/endMenu"]
+layout_mode = 2
+theme_override_constants/separation = 60
+
+[node name="endLabel" type="Label" parent="uiLayer/endMenu/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "You Won!"
+horizontal_alignment = 1
+
+[node name="marginContainer" type="MarginContainer" parent="uiLayer/endMenu/vBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="vBoxContainer" type="VBoxContainer" parent="uiLayer/endMenu/vBoxContainer/marginContainer"]
+layout_mode = 2
+
+[node name="stats" type="Label" parent="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "Time Played: 00:00.00
+Gamemode: Classic
+Difficulty: Easy
+Grid Size: 9x9
+Mine Amount: 10"
+
+[node name="newBoard" type="Button" parent="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+text = "New Board"
+
+[node name="mainMenu" type="Button" parent="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+text = "Return to Title"
+
 [node name="backgroundLayer" type="CanvasLayer" parent="."]
 layer = -10
 
@@ -105,4 +154,6 @@ stretch_mode = 1
 [node name="timer" type="Timer" parent="."]
 one_shot = true
 
+[connection signal="pressed" from="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/newBoard" to="." method="_on_new_board_pressed"]
+[connection signal="pressed" from="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/mainMenu" to="." method="_on_main_menu_pressed"]
 [connection signal="timeout" from="timer" to="." method="_on_timer_timeout"]

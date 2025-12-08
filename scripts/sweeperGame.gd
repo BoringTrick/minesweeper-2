@@ -6,6 +6,9 @@ extends Node2D
 @onready var timerLabel = $uiLayer/timerLabel
 @onready var flagLabel = $uiLayer/flagsLeftLabel
 @onready var timerIcon = $uiLayer/timedModeIcon
+@onready var endMenuStats = $uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/stats
+@onready var endMenuLabel = $uiLayer/endMenu/vBoxContainer/endLabel
+@onready var endMenu = $uiLayer/endMenu
 
 # useful resources:
 # https://forum.godotengine.org/t/how-to-declare-2d-arrays-matrices-in-gdscript/38638/5
@@ -70,12 +73,23 @@ func gameOver(incorrectTile):
 				coverLayer.erase_cell(Vector2i(x, y))
 			elif gridArray[(y * gameManager.xSize) + x] != -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) == Vector2i(1,1):
 				coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(4, 1), 0)
+	endMenu.show()
 
 # runs when the game wins via uncovering every non-mine
 func winGame():
 	gameManager.updateState("won")
 	if gameManager.gamemode == "Timed":
 		$timer.stop()
+	endMenuLabel.text = "You Won!"
+	if gameManager.gamemode != "Timed":
+		endMenuStats.text = "Time Played: %02d:%02d.%02d" % [mins, secs, millis]
+	else:
+		endMenuStats.text = "Time Remaining: %02d:%02d.%02d" % [floor(timedTimeLeft / 60), int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
+	endMenuStats.text += "\nGamemode: " + gameManager.gamemode
+	endMenuStats.text += "\nDifficulty: " + gameManager.difficulty
+	endMenuStats.text += "\nGrid Size: " + str(gameManager.xSize) + "x" + str(gameManager.ySize)
+	endMenuStats.text += "\nMine Amount: " + str(gameManager.mineCount)
+	endMenu.show()
 
 # this function fills out the board, with the clickedTile being safe
 # from mines
@@ -154,6 +168,7 @@ var timeElapsed = 0.0
 var mins
 var secs
 var millis
+var timedTimeLeft
 
 # updates the timer and handles input events
 func _process(_delta):
@@ -204,7 +219,8 @@ func _process(_delta):
 	# timer code for the top right timer, count up for normal count down for timed
 	if gameManager.gameState == "playing":
 		if gameManager.gamemode == "Timed":
-			timerLabel.text = "%02d:%02d.%02d" % [floor($timer.time_left / 60), int($timer.time_left) % 60, fmod($timer.time_left, 1) * 100]
+			timedTimeLeft = $timer.time_left
+			timerLabel.text = "%02d:%02d.%02d" % [floor(timedTimeLeft / 60), int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
 		else:
 			timeElapsed += _delta
 			mins = timeElapsed / 60
@@ -212,6 +228,18 @@ func _process(_delta):
 			millis = fmod(timeElapsed, 1) * 100
 			timerLabel.text = "%02d:%02d.%02d" % [mins, secs, millis]
 
+# ---SIGNALS---
+
 # timer mode: when time runs out
 func _on_timer_timeout():
 	gameOver(Vector2i(-1, -1))
+
+# win/loss menu: new board pressed
+func _on_new_board_pressed():
+	transitionManager.transitionType = transitionManager.state.NONE
+	transitionManager.load_scene(gameManager.mainGame)
+
+# win/loss label: main menu pressed
+func _on_main_menu_pressed():
+	transitionManager.transitionType = transitionManager.state.FADE
+	transitionManager.load_scene(gameManager.titleScreen)

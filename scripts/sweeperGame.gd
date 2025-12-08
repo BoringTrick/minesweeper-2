@@ -60,9 +60,16 @@ func addMine(clickedTile):
 	else:
 		gridArray[(mineY * gameManager.xSize) + mineX] = -1
 
+func populateEndScreen():
+	endMenuStats.text += "\nGamemode: " + gameManager.gamemode
+	endMenuStats.text += "\nDifficulty: " + gameManager.difficulty
+	endMenuStats.text += "\nGrid Size: " + str(gameManager.xSize) + "x" + str(gameManager.ySize)
+	endMenuStats.text += "\nMine Amount: " + str(gameManager.mineCount)
+
 # set the game to the game over state and show all mines + incorrect flags
 func gameOver(incorrectTile):
 	gameManager.updateState("ended")
+	var incorrectFlags = 0
 	if gameManager.gamemode == "Timed":
 		$timer.stop()
 	if isValid(incorrectTile.x, incorrectTile.y):
@@ -73,9 +80,19 @@ func gameOver(incorrectTile):
 				coverLayer.erase_cell(Vector2i(x, y))
 			elif gridArray[(y * gameManager.xSize) + x] != -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) == Vector2i(1,1):
 				coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(4, 1), 0)
+				incorrectFlags += 1
+	endMenuLabel.text = "Game Over"
+	if gameManager.gamemode != "Timed":
+		endMenuStats.text = "Time Played: %02d:%02d.%02d" % [mins, secs, millis]
+	else:
+		endMenuStats.text = "Time Remaining: %02d:%02d.%02d" % [floor(timedTimeLeft / 60), int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
+	populateEndScreen()
+	endMenuStats.text += "\nCorrect Flags: " + str((gameManager.mineCount - flagsLeft) - incorrectFlags)
+	endMenuStats.text += "\nIncorrect Flags: " + str(incorrectFlags)
 	endMenu.show()
 
 # runs when the game wins via uncovering every non-mine
+# sets the game state to win, sets up the end menu, and handles other win logic
 func winGame():
 	gameManager.updateState("won")
 	if gameManager.gamemode == "Timed":
@@ -85,10 +102,7 @@ func winGame():
 		endMenuStats.text = "Time Played: %02d:%02d.%02d" % [mins, secs, millis]
 	else:
 		endMenuStats.text = "Time Remaining: %02d:%02d.%02d" % [floor(timedTimeLeft / 60), int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
-	endMenuStats.text += "\nGamemode: " + gameManager.gamemode
-	endMenuStats.text += "\nDifficulty: " + gameManager.difficulty
-	endMenuStats.text += "\nGrid Size: " + str(gameManager.xSize) + "x" + str(gameManager.ySize)
-	endMenuStats.text += "\nMine Amount: " + str(gameManager.mineCount)
+	populateEndScreen()
 	endMenu.show()
 
 # this function fills out the board, with the clickedTile being safe

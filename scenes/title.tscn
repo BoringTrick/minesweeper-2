@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://bu0llecu4l60l"]
+[gd_scene load_steps=7 format=3 uid="uid://bu0llecu4l60l"]
 
 [ext_resource type="Script" uid="uid://d65llrk5v5av" path="res://Scripts/Title.gd" id="1_aa56r"]
 [ext_resource type="Texture2D" uid="uid://bmd7rjpvyiiry" path="res://Assets/Static/Logo.png" id="2_agd63"]
 [ext_resource type="ButtonGroup" uid="uid://dqgm5n3xmwas1" path="res://Scenes/TitleDifficultyGroup.tres" id="3_mh4yb"]
+[ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://GameObjects/LabelSettings/GUIText.tres" id="4_71b5n"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://GameObjects/Tilemaps/SweeperTiles.tres" id="4_wq2ky"]
 [ext_resource type="Script" uid="uid://ceydlmg8rbpsi" path="res://Scripts/MenuBoard.gd" id="5_uth7j"]
 
@@ -156,6 +157,20 @@ dont click a mine!"
 [node name="MarginContainer" type="MarginContainer" parent="titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer2"]
 layout_mode = 2
 theme_override_constants/margin_left = 85
+
+[node name="version" type="Label" parent="titleUI"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -23.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "VersionText"
+label_settings = ExtResource("4_71b5n")
+horizontal_alignment = 2
 
 [node name="fakeMineLayer" type="TileMapLayer" parent="."]
 z_index = -1

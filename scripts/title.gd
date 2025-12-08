@@ -7,6 +7,7 @@ extends Node2D
 @onready var mediumButton = $titleUI/playPanel/VBoxContainer/MarginContainer/HBoxContainer/mediumSelect
 @onready var hardButton = $titleUI/playPanel/VBoxContainer/MarginContainer/HBoxContainer/hardSelect
 @onready var gamemodeDetails = $titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer2/gamemodeDetails
+@onready var versionLabel = $titleUI/version
 
 # updates the grid size + mine count label when called
 func updateLabel():
@@ -63,6 +64,7 @@ func _on_gamemode_item_selected(index):
 
 # auto set the difficulty + gamemode on scene load to prevent glitches
 func _ready():
+	versionLabel.text = ProjectSettings.get_setting("application/config/version")
 	gameManager.updateState("title")
 	gameManager.difficulty = "Easy"
 	gameManager.xSize = 9

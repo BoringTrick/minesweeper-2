@@ -60,6 +60,7 @@ func addMine(clickedTile):
 	else:
 		gridArray[(mineY * gameManager.xSize) + mineX] = -1
 
+# set common stats for the end screen for winning and losing
 func populateEndScreen():
 	endMenuStats.text += "\nGamemode: " + gameManager.gamemode
 	endMenuStats.text += "\nDifficulty: " + gameManager.difficulty

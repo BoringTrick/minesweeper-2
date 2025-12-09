@@ -9,6 +9,7 @@ extends Node2D
 @onready var endMenuStats = $uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/stats
 @onready var endMenuLabel = $uiLayer/endMenu/vBoxContainer/endLabel
 @onready var endMenu = $uiLayer/endMenu
+@onready var timedTimeBonusText = $uiLayer/timedModeTimeBonus
 
 # useful resources:
 # https://forum.godotengine.org/t/how-to-declare-2d-arrays-matrices-in-gdscript/38638/5
@@ -28,6 +29,11 @@ var dy = [-1, 0, 1, -1, 1, -1, 0, 1]
 
 # backend array that stores mines and numbers
 var gridArray = []
+
+# Amount of mines clicked. Used exclusively in timed mode
+var minesClicked = 0
+
+var timerQueue = 0
 
 # returns true if the input row and column are inside the board size
 func isValid(row, col):
@@ -66,45 +72,49 @@ func populateEndScreen():
 	endMenuStats.text += "\nDifficulty: " + gameManager.difficulty
 	endMenuStats.text += "\nGrid Size: " + str(gameManager.xSize) + "x" + str(gameManager.ySize)
 	endMenuStats.text += "\nMine Amount: " + str(gameManager.mineCount)
+	if gameManager.gamemode == "Timed":
+		endMenuStats.text += "\nMines Hit: " + str(minesClicked)
 
 # set the game to the game over state and show all mines + incorrect flags
 func gameOver(incorrectTile):
-	gameManager.updateState("ended")
-	var incorrectFlags = 0
-	if gameManager.gamemode == "Timed":
-		$timer.stop()
-	if isValid(incorrectTile.x, incorrectTile.y):
-		numberLayer.set_cell(incorrectTile, 0, Vector2i(3, 1), 0)
-	for y in gameManager.ySize:
-		for x in gameManager.xSize:
-			if Vector2i(x, y) != incorrectTile and gridArray[(y * gameManager.xSize) + x] == -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) != Vector2i(1,1):
-				coverLayer.erase_cell(Vector2i(x, y))
-			elif gridArray[(y * gameManager.xSize) + x] != -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) == Vector2i(1,1):
-				coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(4, 1), 0)
-				incorrectFlags += 1
-	endMenuLabel.text = "Game Over"
-	if gameManager.gamemode != "Timed":
-		endMenuStats.text = "Time Played: %02d:%02d.%02d" % [mins, secs, millis]
-	else:
-		endMenuStats.text = "Time Remaining: %02d:%02d.%02d" % [floor(timedTimeLeft / 60), int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
-	populateEndScreen()
-	endMenuStats.text += "\nCorrect Flags: " + str((gameManager.mineCount - flagsLeft) - incorrectFlags)
-	endMenuStats.text += "\nIncorrect Flags: " + str(incorrectFlags)
-	endMenu.show()
+	if gameManager.gameState == "playing":
+		gameManager.updateState("ended")
+		var incorrectFlags = 0
+		if gameManager.gamemode == "Timed":
+			$timer.stop()
+		if isValid(incorrectTile.x, incorrectTile.y):
+			numberLayer.set_cell(incorrectTile, 0, Vector2i(3, 1), 0)
+		for y in gameManager.ySize:
+			for x in gameManager.xSize:
+				if Vector2i(x, y) != incorrectTile and gridArray[(y * gameManager.xSize) + x] == -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) != Vector2i(1,1):
+					coverLayer.erase_cell(Vector2i(x, y))
+				elif gridArray[(y * gameManager.xSize) + x] != -1 and coverLayer.get_cell_atlas_coords(Vector2i(x, y)) == Vector2i(1,1):
+					coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(4, 1), 0)
+					incorrectFlags += 1
+		endMenuLabel.text = "Game Over"
+		if gameManager.gamemode != "Timed":
+			endMenuStats.text = "Time Played: %02d:%02d.%02d" % [mins, secs, millis]
+		else:
+			endMenuStats.text = ""
+		populateEndScreen()
+		endMenuStats.text += "\nCorrect Flags: " + str((gameManager.mineCount - flagsLeft) - incorrectFlags)
+		endMenuStats.text += "\nIncorrect Flags: " + str(incorrectFlags)
+		endMenu.show()
 
 # runs when the game wins via uncovering every non-mine
 # sets the game state to win, sets up the end menu, and handles other win logic
 func winGame():
-	gameManager.updateState("won")
-	if gameManager.gamemode == "Timed":
-		$timer.stop()
-	endMenuLabel.text = "You Won!"
-	if gameManager.gamemode != "Timed":
-		endMenuStats.text = "Time Played: %02d:%02d.%02d" % [mins, secs, millis]
-	else:
-		endMenuStats.text = "Time Remaining: %02d:%02d.%02d" % [floor(timedTimeLeft / 60), int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
-	populateEndScreen()
-	endMenu.show()
+	if gameManager.gameState == "playing":
+		gameManager.updateState("won")
+		if gameManager.gamemode == "Timed":
+			$timer.stop()
+		endMenuLabel.text = "You Won!"
+		if gameManager.gamemode != "Timed":
+			endMenuStats.text = "Time Played: %02d:%02d.%02d" % [mins, secs, millis]
+		else:
+			endMenuStats.text = "Time Remaining: %02d.%02d" % [int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
+		populateEndScreen()
+		endMenu.show()
 
 # this function fills out the board, with the clickedTile being safe
 # from mines
@@ -171,19 +181,19 @@ func _ready():
 	
 	# set up the custom timer label for timed mode
 	if gameManager.gamemode == "Timed":
-		timerLabel.position += Vector2(0, 11)
+		timerLabel.position = Vector2(441, 23)
 		timerIcon.show()
-		$timer.wait_time = (gameManager.mineCount * gameManager.timedMineStartSec)
-		timerLabel.text = "%02d:%02d.%02d" % [floor($timer.wait_time / 60), int($timer.wait_time) % 60, fmod($timer.wait_time, 1) * 100]
+		$timer.wait_time = gameManager.timedStartTime
+		timerLabel.text = "%02d.%02d" % [int($timer.wait_time) % 60, fmod($timer.wait_time, 1) * 100]
 	
 	gameManager.updateState("before")
 
 # Variables for the timer on the top left
 var timeElapsed = 0.0
-var mins
-var secs
-var millis
-var timedTimeLeft
+var mins = 0.0
+var secs = 0.0
+var millis = 0.0
+var timedTimeLeft = gameManager.timedStartTime
 
 # updates the timer and handles input events
 func _process(_delta):
@@ -203,10 +213,25 @@ func _process(_delta):
 					coverLayer.erase_cell(clickedTile)
 					if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] != -1:
 						tilesLeft -= 1
+						# TIMED GAMEMODE: add time equal to number clicked 
+						if gameManager.gamemode == "Timed":
+							timerQueue += gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x]
 						if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
 							revealNeighbors(clickedTile.x, clickedTile.y)
 					else:
-						gameOver(clickedTile)
+						minesClicked += 1
+						# TIMED GAMEMODE: time subtraction on mine hit instead of gameover
+						if gameManager.gamemode != "Timed":
+							gameOver(clickedTile)
+						else:
+							numberLayer.set_cell(clickedTile, 0, Vector2i(3, 1), 0)
+							if ($timer.time_left + gameManager.timedTimeLossOnMineHit) <= 0:
+								timerQueue += gameManager.timedTimeLossOnMineHit
+								$timer.start(0.00001)
+							else:
+								flagsLeft -= 1
+								flagLabel.text = "Flags Remaining: " + str(flagsLeft)
+								timerQueue += gameManager.timedTimeLossOnMineHit
 				elif Input.is_action_just_pressed("flagTile"):
 					if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 						if flagsLeft > 0:
@@ -218,11 +243,11 @@ func _process(_delta):
 						flagLabel.text = "Flags Remaining: " + str(flagsLeft)
 						coverLayer.set_cell(clickedTile, 0, Vector2i(0, 1), 0)
 			elif isValid(clickedTile.x, clickedTile.y) and gameManager.gameState == "before" and Input.is_action_just_pressed("revealTile"):
-				# timer mode: start the timer
-				if gameManager.gamemode == "Timed":
-					$timer.start()
 				populateBoard(clickedTile)
 				coverLayer.erase_cell(clickedTile)
+				# TIMED GAMEMODE: start the timer
+				if gameManager.gamemode == "Timed":
+					$timer.start()
 				tilesLeft -= 1
 				if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
 					revealNeighbors(clickedTile.x, clickedTile.y)
@@ -231,11 +256,39 @@ func _process(_delta):
 			if tilesLeft <= 0:
 				winGame()
 	
+	# TIMED GAMEMODE: timer queue: if multiple timer events happen at
+	# the same time they all get processed at once
+	# this code also handles the text that appears under the timer
+	if timerQueue != 0 and gameManager.gameState == "playing" and gameManager.gamemode == "Timed":
+		# cap the time if it's over the max time allowed
+		if ($timer.time_left + timerQueue) > gameManager.timedMaxTimeAllowed:
+			var amountToCapWith = ($timer.time_left + timerQueue) - gameManager.timedMaxTimeAllowed
+			timerQueue = int(floor(timerQueue - amountToCapWith))
+		var bonusText = timedTimeBonusText.duplicate()
+		$uiLayer.add_child(bonusText)
+		if timerQueue > 0:
+			bonusText.text = "+" + str(timerQueue)
+			bonusText.add_theme_color_override("font_color", Color.GREEN)
+		elif timerQueue == 0:
+			bonusText.text = "+" + str(timerQueue)
+			bonusText.add_theme_color_override("font_color", Color.WHITE)
+		else:
+			bonusText.text = str(timerQueue)
+			bonusText.add_theme_color_override("font_color", Color.RED)
+		bonusText.show()
+		# use tweens to animate the text appearing under the timer
+		var tween = get_tree().create_tween()
+		tween.tween_property(bonusText, "modulate", Color(0.0, 0.0, 0.0, 0.0), 1.5)
+		tween.parallel().tween_property(bonusText, "position", Vector2(bonusText.position.x, (bonusText.position.y + 35)), 1.5)
+		tween.tween_callback(bonusText.queue_free)
+		$timer.start($timer.time_left + timerQueue)
+		timerQueue = 0
+	
 	# timer code for the top right timer, count up for normal count down for timed
 	if gameManager.gameState == "playing":
 		if gameManager.gamemode == "Timed":
 			timedTimeLeft = $timer.time_left
-			timerLabel.text = "%02d:%02d.%02d" % [floor(timedTimeLeft / 60), int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
+			timerLabel.text = "%02d.%02d" % [int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
 		else:
 			timeElapsed += _delta
 			mins = timeElapsed / 60

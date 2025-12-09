@@ -14,7 +14,8 @@ func updateLabel():
 	difficultyLabel.text = "Grid Size: " + str(gameManager.xSize) + "x" + str(gameManager.ySize) + "\nMine Amount: " + str(gameManager.mineCount)
 	# extra details if it's timed mode
 	if gameManager.gamemode == "Timed":
-		difficultyLabel.text += "\nTime Limit: %02d:%02d.%02d" % [floor(float(gameManager.mineCount * gameManager.timedMineStartSec) / 60), int(gameManager.mineCount * gameManager.timedMineStartSec) % 60, fmod(gameManager.mineCount * gameManager.timedMineStartSec, 1) * 100]
+		difficultyLabel.text += "\nStart Time: " + str(gameManager.timedStartTime) + "s"
+		difficultyLabel.text += "\nMax Time: " + str(gameManager.timedMaxTimeAllowed) + "s"
 
 # when button pressed functions, most are self explanitory
 func _on_open_play_menu_pressed():
@@ -56,7 +57,7 @@ func _on_gamemode_item_selected(index):
 			gamemodeDetails.text = "Classic minesweeper\ngameplay! Flag tiles,\ncheck the numbers,\ndont click a mine!"
 		1:
 			gameManager.gamemode = "Timed"
-			gamemodeDetails.text = "Normal minesweeper,\nbut under a time limit!\nCan you beat the board\nbefore the time is up?"
+			gamemodeDetails.text = "Minesweeper under a\ntime limit! Directly\nrevealed numbers give\ntime equal to their\nnumber, mines give\n" + str(gameManager.timedTimeLossOnMineHit) + "s. Don't let time run\nout!"
 		2:
 			gameManager.gamemode = "Enemies"
 			gamemodeDetails.text = "The chasers are here"

@@ -8,7 +8,9 @@ var ySize = 9
 var mineCount = 10
 var previousState = "none"
 var gameState = "title"
-var timedMineStartSec = 4
+var timedStartTime = 15
+var timedTimeLossOnMineHit = -10
+var timedMaxTimeAllowed = 25
 @onready var mainGame = load("res://Scenes/SweeperGame.tscn")
 @onready var titleScreen = load("res://Scenes/Title.tscn")
 

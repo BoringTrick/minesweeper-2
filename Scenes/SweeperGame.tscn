@@ -1,0 +1,177 @@
+[gd_scene load_steps=16 format=3 uid="uid://dtobkxcuvlafg"]
+
+[ext_resource type="Script" uid="uid://cmihak75hngou" path="res://Scripts/SweeperGame.gd" id="1_p5k5w"]
+[ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://GameObjects/Tilemaps/SweeperTiles.tres" id="2_ve1wu"]
+[ext_resource type="Script" uid="uid://c1wvrqymeaeij" path="res://Scripts/CameraControl.gd" id="3_ry8e1"]
+[ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://GameObjects/LabelSettings/GUIText.tres" id="4_1jkco"]
+[ext_resource type="Texture2D" uid="uid://d4nmwmycbw40p" path="res://Assets/Backgrounds/Stars/0.png" id="5_bfip3"]
+[ext_resource type="FontFile" uid="uid://b0xuck2yind18" path="res://Assets/Fonts/KenneyRocket.ttf" id="5_ry8e1"]
+[ext_resource type="Texture2D" uid="uid://bufmqeyolnxph" path="res://Assets/Static/TimedTimer.png" id="5_ve1wu"]
+[ext_resource type="Texture2D" uid="uid://dw8gk604x4t0y" path="res://Assets/Backgrounds/Stars/1.png" id="6_n3lgt"]
+[ext_resource type="Texture2D" uid="uid://c2fdvvpir0j1u" path="res://Assets/Backgrounds/Stars/2.png" id="7_kvl84"]
+[ext_resource type="Texture2D" uid="uid://b7x6ltatgervi" path="res://Assets/Backgrounds/Stars/3.png" id="8_7ln24"]
+[ext_resource type="Texture2D" uid="uid://c2no66yknxdph" path="res://Assets/Backgrounds/Stars/4.png" id="9_00pjb"]
+[ext_resource type="Texture2D" uid="uid://bk124ygy2eifp" path="res://Assets/Backgrounds/Stars/5.png" id="10_ijicj"]
+[ext_resource type="Texture2D" uid="uid://vk5a7ohiip8e" path="res://Assets/Backgrounds/Stars/6.png" id="11_tv152"]
+[ext_resource type="Texture2D" uid="uid://dolr88nwmwxht" path="res://Assets/Backgrounds/Stars/7.png" id="12_8nmbw"]
+
+[sub_resource type="AnimatedTexture" id="AnimatedTexture_efvxm"]
+frames = 8
+speed_scale = 5.0
+frame_0/texture = ExtResource("5_bfip3")
+frame_1/texture = ExtResource("6_n3lgt")
+frame_1/duration = 1.0
+frame_2/texture = ExtResource("7_kvl84")
+frame_2/duration = 1.0
+frame_3/texture = ExtResource("8_7ln24")
+frame_3/duration = 1.0
+frame_4/texture = ExtResource("9_00pjb")
+frame_4/duration = 1.0
+frame_5/texture = ExtResource("10_ijicj")
+frame_5/duration = 1.0
+frame_6/texture = ExtResource("11_tv152")
+frame_6/duration = 1.0
+frame_7/texture = ExtResource("12_8nmbw")
+frame_7/duration = 1.0
+
+[node name="sweeperRoot" type="Node2D"]
+script = ExtResource("1_p5k5w")
+
+[node name="minesNumbersLayer" type="TileMapLayer" parent="."]
+z_index = -1
+texture_filter = 1
+scale = Vector2(3, 3)
+tile_set = ExtResource("2_ve1wu")
+
+[node name="camera" type="Camera2D" parent="minesNumbersLayer"]
+script = ExtResource("3_ry8e1")
+
+[node name="minesCoverLayer" type="TileMapLayer" parent="."]
+texture_filter = 1
+scale = Vector2(3, 3)
+tile_set = ExtResource("2_ve1wu")
+
+[node name="uiLayer" type="CanvasLayer" parent="."]
+
+[node name="flagsLeftLabel" type="Label" parent="uiLayer"]
+texture_filter = 1
+offset_left = 5.0
+offset_right = 340.0
+offset_bottom = 35.0
+text = "Flags Remaining: 99"
+label_settings = ExtResource("4_1jkco")
+
+[node name="timerLabel" type="Label" parent="uiLayer"]
+texture_filter = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -230.0
+offset_right = -3.0
+offset_bottom = 35.0
+grow_horizontal = 0
+text = "00:00.00"
+label_settings = ExtResource("4_1jkco")
+horizontal_alignment = 2
+
+[node name="timedModeTimeBonus" type="Label" parent="uiLayer"]
+visible = false
+texture_filter = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -647.0
+offset_top = 43.0
+offset_right = -540.0
+offset_bottom = 78.0
+grow_horizontal = 0
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("5_ry8e1")
+theme_override_font_sizes/font_size = 25
+text = "+0"
+horizontal_alignment = 2
+
+[node name="timedModeIcon" type="TextureRect" parent="uiLayer"]
+visible = false
+texture_filter = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -682.0
+offset_top = -7.0000005
+offset_right = -561.0
+offset_bottom = 114.0
+grow_horizontal = 0
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("5_ve1wu")
+
+[node name="endMenu" type="PanelContainer" parent="uiLayer"]
+visible = false
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+offset_top = -185.0
+offset_right = 272.25
+offset_bottom = 185.0
+grow_vertical = 2
+
+[node name="vBoxContainer" type="VBoxContainer" parent="uiLayer/endMenu"]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="endLabel" type="Label" parent="uiLayer/endMenu/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "You Won!"
+horizontal_alignment = 1
+
+[node name="marginContainer" type="MarginContainer" parent="uiLayer/endMenu/vBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="vBoxContainer" type="VBoxContainer" parent="uiLayer/endMenu/vBoxContainer/marginContainer"]
+layout_mode = 2
+
+[node name="stats" type="Label" parent="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "Time Played: 00:00.00
+Gamemode: Classic
+Difficulty: Easy
+Grid Size: 9x9
+Mine Amount: 10"
+
+[node name="newBoard" type="Button" parent="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+text = "New Board"
+
+[node name="mainMenu" type="Button" parent="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+text = "Return to Title"
+
+[node name="backgroundLayer" type="CanvasLayer" parent="."]
+layer = -10
+
+[node name="bgRect" type="TextureRect" parent="backgroundLayer"]
+show_behind_parent = true
+z_index = -10
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AnimatedTexture_efvxm")
+stretch_mode = 1
+
+[node name="timer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="pressed" from="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/newBoard" to="." method="_on_new_board_pressed"]
+[connection signal="pressed" from="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/mainMenu" to="." method="_on_main_menu_pressed"]
+[connection signal="timeout" from="timer" to="." method="_on_timer_timeout"]

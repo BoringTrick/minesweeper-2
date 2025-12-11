@@ -178,10 +178,9 @@ one_shot = true
 layer = 2
 
 [node name="mouseHitbox" type="Area2D" parent="chaserLayer"]
-position = Vector2(26, 45)
+position = Vector2(30, -42)
 
 [node name="collisionShape2d" type="CollisionShape2D" parent="chaserLayer/mouseHitbox"]
-position = Vector2(-8, -76)
 shape = SubResource("CircleShape2D_ry8e1")
 
 [node name="enemySpawn1" type="Node2D" parent="chaserLayer"]

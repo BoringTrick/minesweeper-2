@@ -10,6 +10,7 @@ extends Node2D
 @onready var endMenuLabel = $uiLayer/endMenu/vBoxContainer/endLabel
 @onready var endMenu = $uiLayer/endMenu
 @onready var timedTimeBonusText = $uiLayer/timedModeTimeBonus
+@onready var mouseHitbox = $chaserLayer/mouseHitbox
 
 # useful resources:
 # https://forum.godotengine.org/t/how-to-declare-2d-arrays-matrices-in-gdscript/38638/5
@@ -19,10 +20,6 @@ extends Node2D
 # used for flag amount counter in top left
 var flagsLeft = gameManager.mineCount
 
-# tiles left to reveal to win the game
-# decrements whenever a tils is revealed
-var tilesLeft = (gameManager.xSize * gameManager.ySize) - gameManager.mineCount
-
 # used for the tiles around a tile calculation in various contexts
 var dx = [-1, -1, -1, 0, 0, 1, 1, 1]
 var dy = [-1, 0, 1, -1, 1, -1, 0, 1]
@@ -30,9 +27,8 @@ var dy = [-1, 0, 1, -1, 1, -1, 0, 1]
 # backend array that stores mines and numbers
 var gridArray = []
 
-# Amount of mines clicked. Used exclusively in timed mode
+# TIMED GAMEMODE: mines clicked stat and the timer queue for timer add/subtraction
 var minesClicked = 0
-
 var timerQueue = 0
 
 # returns true if the input row and column are inside the board size
@@ -51,7 +47,7 @@ func revealNeighbors(row, col):
 			# if the cover tile isn't empty (very important, infinite loop if not here)
 			if coverLayer.get_cell_atlas_coords(Vector2i(newRow, newCol)) != Vector2i(-1,-1):
 				coverLayer.erase_cell(Vector2i(newRow, newCol))
-				tilesLeft -= 1
+				gameManager.tilesLeft -= 1
 				if gridArray[(newCol * gameManager.xSize) + newRow] == 0:
 					revealNeighbors(newRow, newCol)
 
@@ -147,11 +143,57 @@ func populateBoard(clickedTile):
 				numberLayer.set_cell(Vector2i(x, y), 0, Vector2i(2, 1), 0)
 	# set the game to be active after everything's generated
 	gameManager.updateState("playing")
+	
+	if gameManager.gamemode == "Enemies":
+		var evilManChaserScene = preload("res://Prefabs/EvilManChaserEnemy.tscn")
+		var evilManChaser = evilManChaserScene.instantiate()
+		evilManChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
+		evilManChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
+		$chaserLayer.add_child(evilManChaser)
+		evilManChaser.chase()
+		
+		#var mouthChaserScene = preload("res://Prefabs/MouthChaserEnemy.tscn")
+		#var mouthChaser = mouthChaserScene.instantiate()
+		#mouthChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
+		#$chaserLayer.add_child(mouthChaser)
+		#mouthChaser.chase()
+		#var noseChaserScene = preload("res://Prefabs/NoseChaserEnemy.tscn")
+		#var noseChaser = noseChaserScene.instantiate()
+		#noseChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
+		#$chaserLayer.add_child(noseChaser)
+		#noseChaser.initalize(mouthChaser)
+		#
+		#var noseChaser2 = noseChaserScene.instantiate()
+		#noseChaser2.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
+		#$chaserLayer.add_child(noseChaser2)
+		#noseChaser2.initalize(noseChaser)
+		
+		#var ritalinChaserScene = preload("res://Prefabs/RitalinChaserEnemy.tscn")
+		#var ritalinChaser = ritalinChaserScene.instantiate()
+		#ritalinChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
+		#ritalinChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
+		#$chaserLayer.add_child(ritalinChaser)
+		
+		#var eyeChaserScene = preload("res://Prefabs/EyeChaserEnemy.tscn")
+		#var eyeChaser = eyeChaserScene.instantiate()
+		#eyeChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
+		#eyeChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
+		#$chaserLayer.add_child(eyeChaser)
+		#eyeChaser.chase()
+		#var noseChaserScene = preload("res://Prefabs/NoseChaserEnemy.tscn")
+		#var noseChaser = noseChaserScene.instantiate()
+		#noseChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
+		#$chaserLayer.add_child(noseChaser)
+		#noseChaser.initalize(eyeChaser)
 
 # setup the minefield when script loads
 func _ready():
 	# change the gamestate
 	gameManager.updateState("setup")
+	
+	# set up the tiles left to win the game
+	gameManager.tilesLeft = (gameManager.xSize * gameManager.ySize) - gameManager.mineCount
+	
 	# this loop generates cover cells for the entire minefield
 	for y in gameManager.ySize:
 		for x in gameManager.xSize:
@@ -186,6 +228,10 @@ func _ready():
 		$timer.wait_time = gameManager.timedStartTime
 		timerLabel.text = "%02d.%02d" % [int($timer.wait_time) % 60, fmod($timer.wait_time, 1) * 100]
 	
+	# hide the chaser layer if the gamemode isn't enemies
+	if gameManager.gamemode != "Enemies":
+		$chaserLayer.hide()
+	
 	gameManager.updateState("before")
 
 # Variables for the timer on the top left
@@ -212,7 +258,7 @@ func _process(_delta):
 				if Input.is_action_just_pressed("revealTile") and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 					coverLayer.erase_cell(clickedTile)
 					if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] != -1:
-						tilesLeft -= 1
+						gameManager.tilesLeft -= 1
 						# TIMED GAMEMODE: add time equal to number clicked 
 						if gameManager.gamemode == "Timed":
 							timerQueue += gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x]
@@ -248,12 +294,12 @@ func _process(_delta):
 				# TIMED GAMEMODE: start the timer
 				if gameManager.gamemode == "Timed":
 					$timer.start()
-				tilesLeft -= 1
+				gameManager.tilesLeft -= 1
 				if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
 					revealNeighbors(clickedTile.x, clickedTile.y)
 			
 			# ^^^ runs if the above code makes the tilesLeft hit 0
-			if tilesLeft <= 0:
+			if gameManager.tilesLeft <= 0:
 				winGame()
 	
 	# TIMED GAMEMODE: timer queue: if multiple timer events happen at
@@ -284,6 +330,10 @@ func _process(_delta):
 		$timer.start($timer.time_left + timerQueue)
 		timerQueue = 0
 	
+	# ENEMIES GAMEMODE: give the mouse cursor a hitbox
+	if gameManager.gamemode == "Enemies":
+		mouseHitbox.global_position = mouseHitbox.get_global_mouse_position()
+	
 	# timer code for the top right timer, count up for normal count down for timed
 	if gameManager.gameState == "playing":
 		if gameManager.gamemode == "Timed":
@@ -307,7 +357,13 @@ func _on_new_board_pressed():
 	transitionManager.transitionType = transitionManager.state.NONE
 	transitionManager.load_scene(gameManager.mainGame)
 
-# win/loss label: main menu pressed
+# win/loss menu: main menu pressed
 func _on_main_menu_pressed():
 	transitionManager.transitionType = transitionManager.state.FADE
 	transitionManager.load_scene(gameManager.titleScreen)
+
+# lose the game when a chaser is hit
+func _on_mouse_hitbox_area_entered(area):
+	if gameManager.gameState == "playing":
+		if area.is_in_group("Enemy"):
+			gameOver(Vector2i(-1, -1))

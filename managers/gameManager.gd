@@ -11,6 +11,9 @@ var gameState = "title"
 var timedStartTime = 15
 var timedTimeLossOnMineHit = -10
 var timedMaxTimeAllowed = 25
+var tilesLeft = 0
+@warning_ignore("unused_signal")
+signal chaserMoved
 @onready var mainGame = load("res://Scenes/SweeperGame.tscn")
 @onready var titleScreen = load("res://Scenes/Title.tscn")
 

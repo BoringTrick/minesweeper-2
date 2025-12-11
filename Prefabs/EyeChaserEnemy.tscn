@@ -1,0 +1,104 @@
+[gd_scene load_steps=11 format=3 uid="uid://c5w1jayb8wgft"]
+
+[ext_resource type="Script" uid="uid://4o75564bcamp" path="res://Scripts/EyeChaser.gd" id="1_r0mkh"]
+[ext_resource type="Texture2D" uid="uid://c6iv5t3c47fkh" path="res://Assets/SpriteSheets/EyeChaser.png" id="2_1py4j"]
+[ext_resource type="Texture2D" uid="uid://bd0gj275ul666" path="res://Assets/Static/Crosshair.png" id="3_ik6hp"]
+[ext_resource type="Texture2D" uid="uid://bmxqfab6eb0ui" path="res://Assets/Static/LineTile.png" id="4_um0ut"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ctkkx"]
+atlas = ExtResource("2_1py4j")
+region = Rect2(1, 1, 16, 17)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o73yj"]
+atlas = ExtResource("2_1py4j")
+region = Rect2(18, 1, 16, 17)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qev3m"]
+atlas = ExtResource("2_1py4j")
+region = Rect2(1, 1, 16, 17)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_urufw"]
+atlas = ExtResource("2_1py4j")
+region = Rect2(18, 1, 16, 17)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_jblq6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ctkkx")
+}],
+"loop": true,
+"name": &"active",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o73yj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qev3m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o73yj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qev3m")
+}],
+"loop": false,
+"name": &"blink",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_urufw")
+}],
+"loop": true,
+"name": &"inactive",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sf34y"]
+size = Vector2(16, 17)
+
+[node name="eyeChaser" type="Area2D" groups=["Enemy"]]
+script = ExtResource("1_r0mkh")
+
+[node name="animatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 3
+texture_filter = 1
+scale = Vector2(2.5, 2.5)
+sprite_frames = SubResource("SpriteFrames_jblq6")
+animation = &"blink"
+frame = 3
+frame_progress = 1.0
+
+[node name="collisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(2.5, 2.5)
+shape = SubResource("RectangleShape2D_sf34y")
+debug_color = Color(1, 0, 0.0864689, 0.42)
+
+[node name="crosshair" type="Sprite2D" parent="."]
+visible = false
+z_index = 3
+texture_filter = 1
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("3_ik6hp")
+
+[node name="attackTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[node name="warningTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[node name="chaserLine" type="Line2D" parent="."]
+visible = false
+z_index = 1
+texture_filter = 1
+texture_repeat = 3
+points = PackedVector2Array(0, 0)
+texture = ExtResource("4_um0ut")
+texture_mode = 1
+
+[connection signal="timeout" from="warningTimer" to="." method="_on_warning_timer_timeout"]

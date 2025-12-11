@@ -1,0 +1,76 @@
+[gd_scene load_steps=10 format=3 uid="uid://bnoc7hxo3wv0x"]
+
+[ext_resource type="Script" uid="uid://demo0ijr805k6" path="res://Scripts/EvilMan.gd" id="1_ed8la"]
+[ext_resource type="Texture2D" uid="uid://bkc6mwmcovlg8" path="res://Assets/SpriteSheets/EvilMan.png" id="2_dja0r"]
+[ext_resource type="Texture2D" uid="uid://bssm5jtb8f3j6" path="res://Assets/Static/EvilManPowerPellet.png" id="3_df6gx"]
+[ext_resource type="Texture2D" uid="uid://17f41mtp563j" path="res://Assets/Static/EvilManPellet.png" id="4_xbtem"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ryoqj"]
+atlas = ExtResource("2_dja0r")
+region = Rect2(18, 1, 16, 19)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xb4dj"]
+atlas = ExtResource("2_dja0r")
+region = Rect2(1, 1, 16, 19)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s44o4"]
+atlas = ExtResource("2_dja0r")
+region = Rect2(1, 1, 16, 19)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_jblq6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ryoqj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xb4dj")
+}],
+"loop": true,
+"name": &"attacking",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s44o4")
+}],
+"loop": false,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sf34y"]
+size = Vector2(38, 38)
+
+[node name="EvilManChaser" type="Area2D" groups=["Enemy"]]
+editor_description = "blink sfx is from https://youtu.be/VBqf_CMJ-wk"
+script = ExtResource("1_ed8la")
+
+[node name="animatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 3
+texture_filter = 1
+scale = Vector2(2.5, 2.5)
+sprite_frames = SubResource("SpriteFrames_jblq6")
+animation = &"idle"
+frame_progress = 1.0
+
+[node name="collisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1, 5)
+shape = SubResource("RectangleShape2D_sf34y")
+debug_color = Color(1, 0, 0.0864689, 0.42)
+
+[node name="crosshair" type="Sprite2D" parent="." groups=["Enemy"]]
+visible = false
+z_index = 2
+texture_filter = 1
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("3_df6gx")
+
+[node name="chaserLine" type="Line2D" parent="."]
+visible = false
+z_index = 1
+texture_filter = 1
+texture_repeat = 3
+points = PackedVector2Array(0, 0, 0, 0)
+texture = ExtResource("4_xbtem")
+texture_mode = 1

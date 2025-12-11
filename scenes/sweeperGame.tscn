@@ -1,11 +1,11 @@
-[gd_scene load_steps=16 format=3 uid="uid://dtobkxcuvlafg"]
+[gd_scene load_steps=17 format=3 uid="uid://dtobkxcuvlafg"]
 
 [ext_resource type="Script" uid="uid://cmihak75hngou" path="res://Scripts/SweeperGame.gd" id="1_p5k5w"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://GameObjects/Tilemaps/SweeperTiles.tres" id="2_ve1wu"]
 [ext_resource type="Script" uid="uid://c1wvrqymeaeij" path="res://Scripts/CameraControl.gd" id="3_ry8e1"]
 [ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://GameObjects/LabelSettings/GUIText.tres" id="4_1jkco"]
 [ext_resource type="Texture2D" uid="uid://d4nmwmycbw40p" path="res://Assets/Backgrounds/Stars/0.png" id="5_bfip3"]
-[ext_resource type="FontFile" uid="uid://b0xuck2yind18" path="res://Assets/Fonts/KenneyRocket.ttf" id="5_ry8e1"]
+[ext_resource type="FontFile" uid="uid://cexbhfqebmb03" path="res://Assets/Fonts/KenneyRocket.ttf" id="5_ry8e1"]
 [ext_resource type="Texture2D" uid="uid://bufmqeyolnxph" path="res://Assets/Static/TimedTimer.png" id="5_ve1wu"]
 [ext_resource type="Texture2D" uid="uid://dw8gk604x4t0y" path="res://Assets/Backgrounds/Stars/1.png" id="6_n3lgt"]
 [ext_resource type="Texture2D" uid="uid://c2fdvvpir0j1u" path="res://Assets/Backgrounds/Stars/2.png" id="7_kvl84"]
@@ -33,6 +33,8 @@ frame_6/texture = ExtResource("11_tv152")
 frame_6/duration = 1.0
 frame_7/texture = ExtResource("12_8nmbw")
 frame_7/duration = 1.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ry8e1"]
 
 [node name="sweeperRoot" type="Node2D"]
 script = ExtResource("1_p5k5w")
@@ -172,6 +174,23 @@ stretch_mode = 1
 [node name="timer" type="Timer" parent="."]
 one_shot = true
 
+[node name="chaserLayer" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="mouseHitbox" type="Area2D" parent="chaserLayer"]
+position = Vector2(26, 45)
+
+[node name="collisionShape2d" type="CollisionShape2D" parent="chaserLayer/mouseHitbox"]
+position = Vector2(-8, -76)
+shape = SubResource("CircleShape2D_ry8e1")
+
+[node name="enemySpawn1" type="Node2D" parent="chaserLayer"]
+position = Vector2(39, 606)
+
+[node name="enemySpawn2" type="Node2D" parent="chaserLayer"]
+position = Vector2(1118, 612)
+
 [connection signal="pressed" from="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/newBoard" to="." method="_on_new_board_pressed"]
 [connection signal="pressed" from="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/mainMenu" to="." method="_on_main_menu_pressed"]
 [connection signal="timeout" from="timer" to="." method="_on_timer_timeout"]
+[connection signal="area_entered" from="chaserLayer/mouseHitbox" to="." method="_on_mouse_hitbox_area_entered"]

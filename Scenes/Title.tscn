@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://bu0llecu4l60l"]
 
 [ext_resource type="Script" uid="uid://d65llrk5v5av" path="res://Scripts/Title.gd" id="1_aa56r"]
-[ext_resource type="Texture2D" uid="uid://bmd7rjpvyiiry" path="res://Assets/Static/Logo.png" id="2_agd63"]
+[ext_resource type="Texture2D" uid="uid://so67lkcff5ng" path="res://Assets/Static/Logo.png" id="2_agd63"]
 [ext_resource type="ButtonGroup" uid="uid://dqgm5n3xmwas1" path="res://Scenes/TitleDifficultyGroup.tres" id="3_mh4yb"]
 [ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://GameObjects/LabelSettings/GUIText.tres" id="4_71b5n"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://GameObjects/Tilemaps/SweeperTiles.tres" id="4_wq2ky"]

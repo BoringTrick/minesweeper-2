@@ -1,6 +1,6 @@
 [gd_scene load_steps=17 format=3 uid="uid://dtobkxcuvlafg"]
 
-[ext_resource type="Script" uid="uid://cmihak75hngou" path="res://Scripts/SweeperGame.gd" id="1_p5k5w"]
+[ext_resource type="Script" uid="uid://bt4v6eksvjqka" path="res://Scripts/SweeperGame.gd" id="1_p5k5w"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://GameObjects/Tilemaps/SweeperTiles.tres" id="2_ve1wu"]
 [ext_resource type="Script" uid="uid://c1wvrqymeaeij" path="res://Scripts/CameraControl.gd" id="3_ry8e1"]
 [ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://GameObjects/LabelSettings/GUIText.tres" id="4_1jkco"]

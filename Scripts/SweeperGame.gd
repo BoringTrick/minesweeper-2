@@ -6,11 +6,11 @@ extends Node2D
 @onready var timerLabel = $uiLayer/timerLabel
 @onready var flagLabel = $uiLayer/flagsLeftLabel
 @onready var timerIcon = $uiLayer/timedModeIcon
-@onready var endMenuStats = $uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/stats
-@onready var endMenuLabel = $uiLayer/endMenu/vBoxContainer/endLabel
-@onready var endMenu = $uiLayer/endMenu
+@onready var endMenuStats = $endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/stats
+@onready var endMenuLabel = $endMenuLayer/endMenu/vBoxContainer/endLabel
+@onready var endMenu = $endMenuLayer/endMenu
 @onready var timedTimeBonusText = $uiLayer/timedModeTimeBonus
-@onready var mouseHitbox = $chaserLayer/mouseHitbox
+@onready var mouseHitbox = $mouseLayer/mouseHitbox
 
 # useful resources:
 # https://forum.godotengine.org/t/how-to-declare-2d-arrays-matrices-in-gdscript/38638/5
@@ -171,7 +171,7 @@ func populateBoard(clickedTile):
 			
 			mediumChaser.position = $chaserLayer/enemySpawn3.position
 			if randomMediumChaser == "Eye":
-				mediumChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
+				mediumChaser.target = mouseHitbox.get_child(0)
 				$chaserLayer.add_child(mediumChaser)
 				mediumChaser.chase()
 			else:
@@ -187,7 +187,7 @@ func populateBoard(clickedTile):
 				var hardChaser = hardChaserScene.instantiate()
 				
 				hardChaser.position = $chaserLayer/enemySpawn4.position
-				hardChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
+				hardChaser.target = mouseHitbox.get_child(0)
 				$chaserLayer.add_child(hardChaser)
 				if randomHardChaser == "EvilMan":
 					hardChaser.chase()

@@ -4,7 +4,7 @@ extends Area2D
 @onready var crosshair = $crosshair
 @onready var chaserLine = $chaserLine
 
-@export var cooldownTime = 2.75
+@export var cooldownTime = 3.25
 
 # debounce to make it so mr ear only attacks while not under cooldown
 var isBusy = false

@@ -109,55 +109,6 @@ grow_horizontal = 0
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("5_ve1wu")
 
-[node name="endMenu" type="PanelContainer" parent="uiLayer"]
-visible = false
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 15.0
-offset_top = -185.0
-offset_right = 272.25
-offset_bottom = 185.0
-grow_vertical = 2
-
-[node name="vBoxContainer" type="VBoxContainer" parent="uiLayer/endMenu"]
-layout_mode = 2
-theme_override_constants/separation = 40
-
-[node name="endLabel" type="Label" parent="uiLayer/endMenu/vBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "You Won!"
-horizontal_alignment = 1
-
-[node name="marginContainer" type="MarginContainer" parent="uiLayer/endMenu/vBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="vBoxContainer" type="VBoxContainer" parent="uiLayer/endMenu/vBoxContainer/marginContainer"]
-layout_mode = 2
-
-[node name="stats" type="Label" parent="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 19
-text = "Time Played: 00:00.00
-Gamemode: Classic
-Difficulty: Easy
-Grid Size: 9x9
-Mine Amount: 10"
-
-[node name="newBoard" type="Button" parent="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 27
-text = "New Board"
-
-[node name="mainMenu" type="Button" parent="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 27
-text = "Return to Title"
-
 [node name="backgroundLayer" type="CanvasLayer" parent="."]
 layer = -10
 
@@ -179,25 +130,6 @@ one_shot = true
 [node name="chaserLayer" type="CanvasLayer" parent="."]
 layer = 2
 
-[node name="mouseHitbox" type="Area2D" parent="chaserLayer"]
-position = Vector2(30, -42)
-
-[node name="collisionShape2d" type="CollisionShape2D" parent="chaserLayer/mouseHitbox"]
-position = Vector2(6.9999995, 12.999999)
-rotation = -0.33330753
-scale = Vector2(0.9263611, 1.04)
-shape = SubResource("CapsuleShape2D_1jkco")
-
-[node name="textureRect" type="TextureRect" parent="chaserLayer/mouseHitbox"]
-texture_filter = 1
-offset_left = -3.0
-offset_top = -3.0
-offset_right = 22.0
-offset_bottom = 26.0
-mouse_filter = 2
-texture = ExtResource("15_1jkco")
-metadata/_edit_use_anchors_ = true
-
 [node name="enemySpawn1" type="Node2D" parent="chaserLayer"]
 position = Vector2(39, 606)
 
@@ -213,7 +145,85 @@ position = Vector2(280, 605)
 [node name="enemySpawn5" type="Node2D" parent="chaserLayer"]
 position = Vector2(813, 605)
 
-[connection signal="pressed" from="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/newBoard" to="." method="_on_new_board_pressed"]
-[connection signal="pressed" from="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/mainMenu" to="." method="_on_main_menu_pressed"]
+[node name="endMenuLayer" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="endMenu" type="PanelContainer" parent="endMenuLayer"]
+visible = false
+z_index = 5
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+offset_top = -185.0
+offset_right = 272.25
+offset_bottom = 185.0
+grow_vertical = 2
+
+[node name="vBoxContainer" type="VBoxContainer" parent="endMenuLayer/endMenu"]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="endLabel" type="Label" parent="endMenuLayer/endMenu/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "You Won!"
+horizontal_alignment = 1
+
+[node name="marginContainer" type="MarginContainer" parent="endMenuLayer/endMenu/vBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="vBoxContainer" type="VBoxContainer" parent="endMenuLayer/endMenu/vBoxContainer/marginContainer"]
+layout_mode = 2
+
+[node name="stats" type="Label" parent="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "Time Played: 00:00.00
+Gamemode: Classic
+Difficulty: Easy
+Grid Size: 9x9
+Mine Amount: 10"
+
+[node name="newBoard" type="Button" parent="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+text = "New Board"
+
+[node name="mainMenu" type="Button" parent="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+text = "Return to Title"
+
+[node name="mouseLayer" type="CanvasLayer" parent="."]
+layer = 4
+
+[node name="mouseHitbox" type="Area2D" parent="mouseLayer"]
+top_level = true
+z_index = 10
+z_as_relative = false
+position = Vector2(30, -42)
+
+[node name="collisionShape2d" type="CollisionShape2D" parent="mouseLayer/mouseHitbox"]
+position = Vector2(6.9999995, 12.999999)
+rotation = -0.33330753
+scale = Vector2(0.9263611, 1.04)
+shape = SubResource("CapsuleShape2D_1jkco")
+
+[node name="textureRect" type="TextureRect" parent="mouseLayer/mouseHitbox"]
+texture_filter = 1
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 22.0
+offset_bottom = 26.0
+mouse_filter = 2
+texture = ExtResource("15_1jkco")
+metadata/_edit_use_anchors_ = true
+
 [connection signal="timeout" from="timer" to="." method="_on_timer_timeout"]
-[connection signal="area_entered" from="chaserLayer/mouseHitbox" to="." method="_on_mouse_hitbox_area_entered"]
+[connection signal="pressed" from="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/newBoard" to="." method="_on_new_board_pressed"]
+[connection signal="pressed" from="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/mainMenu" to="." method="_on_main_menu_pressed"]
+[connection signal="area_entered" from="mouseLayer/mouseHitbox" to="." method="_on_mouse_hitbox_area_entered"]

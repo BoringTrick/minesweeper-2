@@ -26,6 +26,7 @@ func moveToPos(clickPos):
 		crosshair.visible = true
 		# very simple chase to the clicked position logic
 		var tweenSpeed = ((self.global_position - clickPos).length()) / 950
+		gameManager.chaserMoved.emit(self, self.global_position, tweenSpeed)
 		var tweenAttack = get_tree().create_tween().set_parallel(true)
 		tweenAttack.tween_property(self, "global_position", clickPos, tweenSpeed)#.set_trans(Tween.TRANS_BOUNCE)
 		tweenAttack.tween_property(crosshair, "global_position", clickPos, tweenSpeed)#.set_trans(Tween.TRANS_BOUNCE)

@@ -30,9 +30,12 @@ func togglePause():
 	if $pauseMenu.visible == false:
 		$pauseMenu.show()
 		get_tree().paused = true
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	else:
 		get_tree().paused = false
 		$pauseMenu.hide()
+		if gamemode == "Enemies":
+			Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 
 # handle opening the pause menu here
 func _process(_delta):

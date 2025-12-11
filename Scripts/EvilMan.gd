@@ -60,15 +60,20 @@ func chase():
 			var tweenTurn = get_tree().create_tween()
 			tweenTurn.tween_property(sprite, "rotation_degrees", orientationToTurn, turnSpeed)
 			await tweenTurn.finished
+			# this + duplicate code in other case is to give him a small
+			# grace period before attacking
+			sprite.play("attacking")
+			await get_tree().create_timer(.5).timeout
 		else:
+			sprite.play("attacking")
 			await get_tree().create_timer(turnSpeed / 12).timeout
+			await get_tree().create_timer(.25).timeout
 		
 		# another check if the game is still active
 		if target != null and gameManager.gameState == "playing":
-			sprite.play("attacking")
 			
 			# chase to the target
-			var tweenSpeed = ((self.global_position - targetPos).length()) / 1700
+			var tweenSpeed = ((self.global_position - targetPos).length()) / 1500
 			gameManager.chaserMoved.emit(self, self.global_position, tweenSpeed)
 			var tweenAttack = get_tree().create_tween().set_parallel(true)
 			tweenAttack.tween_property(self, "global_position", targetPos, tweenSpeed)

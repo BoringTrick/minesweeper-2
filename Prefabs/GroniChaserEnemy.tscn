@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://c1pj57xfj3cte"]
 
-[ext_resource type="Texture2D" uid="uid://dl7a2o80y45ln" path="res://Assets/Static/groni.png" id="1_60fma"]
+[ext_resource type="Texture2D" uid="uid://dl7a2o80y45ln" path="res://Assets/Static/Groni.png" id="1_60fma"]
 [ext_resource type="Script" uid="uid://c61y4gbkp10er" path="res://Scripts/GroniChaser.gd" id="1_68xyv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fpm6j"]

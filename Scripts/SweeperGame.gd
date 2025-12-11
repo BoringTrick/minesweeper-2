@@ -31,6 +31,11 @@ var gridArray = []
 var minesClicked = 0
 var timerQueue = 0
 
+# ENEMIES GAMEMODE: difficulty arrays, used for enemies for specific difficulties
+var easyEnemies = ["Mouth", "Nose"]
+var mediumEnemies = ["Eye", "Ear"]
+var hardEnemies = ["Ritalin", "Groni", "EvilMan"]
+
 # returns true if the input row and column are inside the board size
 func isValid(row, col):
 	return (row >= 0) and (row < gameManager.xSize) and (col >= 0) and (col < gameManager.ySize)
@@ -145,51 +150,51 @@ func populateBoard(clickedTile):
 	gameManager.updateState("playing")
 	
 	if gameManager.gamemode == "Enemies":
-		var earChaserScene = preload("res://Prefabs/EarChaserEnemy.tscn")
-		var earChaser = earChaserScene.instantiate()
-		earChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
-		$chaserLayer.add_child(earChaser)
+		# add a mouth and nose chaser, make the nose chase the mouth
+		var mouthChaserScene = load("res://Prefabs/MouthChaserEnemy.tscn")
+		var noseChaserScene = load("res://Prefabs/NoseChaserEnemy.tscn")
+		var mouthChaser = mouthChaserScene.instantiate()
 		
-		#var evilManChaserScene = preload("res://Prefabs/EvilManChaserEnemy.tscn")
-		#var evilManChaser = evilManChaserScene.instantiate()
-		#evilManChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
-		#evilManChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
-		#$chaserLayer.add_child(evilManChaser)
-		#evilManChaser.chase()
+		mouthChaser.position = $chaserLayer/enemySpawn1.position
+		$chaserLayer.add_child(mouthChaser)
+		mouthChaser.chase()
 		
-		#var mouthChaserScene = preload("res://Prefabs/MouthChaserEnemy.tscn")
-		#var mouthChaser = mouthChaserScene.instantiate()
-		#mouthChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
-		#$chaserLayer.add_child(mouthChaser)
-		#mouthChaser.chase()
-		#var noseChaserScene = preload("res://Prefabs/NoseChaserEnemy.tscn")
-		#var noseChaser = noseChaserScene.instantiate()
-		#noseChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
-		#$chaserLayer.add_child(noseChaser)
-		#noseChaser.initalize(mouthChaser)
-		#
-		#var noseChaser2 = noseChaserScene.instantiate()
-		#noseChaser2.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
-		#$chaserLayer.add_child(noseChaser2)
-		#noseChaser2.initalize(noseChaser)
-		
-		#var ritalinChaserScene = preload("res://Prefabs/RitalinChaserEnemy.tscn")
-		#var ritalinChaser = ritalinChaserScene.instantiate()
-		#ritalinChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
-		#ritalinChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
-		#$chaserLayer.add_child(ritalinChaser)
-		
-		#var eyeChaserScene = preload("res://Prefabs/EyeChaserEnemy.tscn")
-		#var eyeChaser = eyeChaserScene.instantiate()
-		#eyeChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
-		#eyeChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
-		#$chaserLayer.add_child(eyeChaser)
-		#eyeChaser.chase()
-		#var noseChaserScene = preload("res://Prefabs/NoseChaserEnemy.tscn")
-		#var noseChaser = noseChaserScene.instantiate()
-		#noseChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
-		#$chaserLayer.add_child(noseChaser)
-		#noseChaser.initalize(eyeChaser)
+		var noseChaser = noseChaserScene.instantiate()
+		noseChaser.position = $chaserLayer/enemySpawn2.position
+		$chaserLayer.add_child(noseChaser)
+		noseChaser.initalize(mouthChaser)
+		# spawn a random medium enemy if its medium or hard
+		if gameManager.difficulty == "Medium" or gameManager.difficulty == "Hard":
+			var randomMediumChaser = mediumEnemies.pick_random()
+			var mediumChaserScene = load("res://Prefabs/" + randomMediumChaser + "ChaserEnemy.tscn")
+			var mediumChaser = mediumChaserScene.instantiate()
+			
+			mediumChaser.position = $chaserLayer/enemySpawn3.position
+			if randomMediumChaser == "Eye":
+				mediumChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
+				$chaserLayer.add_child(mediumChaser)
+				mediumChaser.chase()
+			else:
+				$chaserLayer.add_child(mediumChaser)
+			
+			# rng check for if the nose should lock onto the new medium chaser
+			if randi_range(0,1) == 1:
+				noseChaser.chaserToChase = mediumChaser
+			# spawn a random hard enemy if its hard
+			if gameManager.difficulty == "Hard":
+				var randomHardChaser = hardEnemies.pick_random()
+				var hardChaserScene = load("res://Prefabs/" + randomHardChaser + "ChaserEnemy.tscn")
+				var hardChaser = hardChaserScene.instantiate()
+				
+				hardChaser.position = $chaserLayer/enemySpawn4.position
+				hardChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
+				$chaserLayer.add_child(hardChaser)
+				if randomHardChaser == "EvilMan":
+					hardChaser.chase()
+				
+				# rng check for if the nose should lock onto evil man
+				if randi_range(0,1) == 1 and randomHardChaser == "EvilMan":
+					noseChaser.chaserToChase = hardChaser
 
 # setup the minefield when script loads
 func _ready():
@@ -233,9 +238,11 @@ func _ready():
 		$timer.wait_time = gameManager.timedStartTime
 		timerLabel.text = "%02d.%02d" % [int($timer.wait_time) % 60, fmod($timer.wait_time, 1) * 100]
 	
-	# hide the chaser layer if the gamemode isn't enemies
+	# hide the chaser layer if the gamemode isn't enemies, hide the mouse if it is
 	if gameManager.gamemode != "Enemies":
 		$chaserLayer.hide()
+	else:
+		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	
 	gameManager.updateState("before")
 

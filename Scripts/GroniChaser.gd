@@ -12,7 +12,7 @@ func _process(_delta):
 			movementTween.kill()
 			movementTween = null
 		var tween = get_tree().create_tween()
-		tween.tween_property(self, "position", target.global_position, 1.25)
+		tween.tween_property(self, "position", target.global_position, 1.5)
 		movementTween = tween
 	else:
 		# if no more target stop moving and kill the movement tween

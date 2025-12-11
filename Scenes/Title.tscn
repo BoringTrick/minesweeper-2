@@ -143,7 +143,7 @@ popup/item_0/text = "Classic"
 popup/item_0/id = 0
 popup/item_1/text = "Timed"
 popup/item_1/id = 1
-popup/item_2/text = "Enemies (WIP)"
+popup/item_2/text = "Enemies"
 popup/item_2/id = 2
 
 [node name="gamemodeDetails" type="Label" parent="titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer2"]

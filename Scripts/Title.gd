@@ -16,6 +16,13 @@ func updateLabel():
 	if gameManager.gamemode == "Timed":
 		difficultyLabel.text += "\nStart Time: " + str(gameManager.timedStartTime) + "s"
 		difficultyLabel.text += "\nMax Time: " + str(gameManager.timedMaxTimeAllowed) + "s"
+	elif gameManager.gamemode == "Enemies":
+		if gameManager.difficulty == "Easy":
+			difficultyLabel.text += "\nTier 1 Enemies"
+		elif gameManager.difficulty == "Medium":
+			difficultyLabel.text += "\nTier 1 and 2\nEnemies"
+		elif gameManager.difficulty == "Hard":
+			difficultyLabel.text += "\nTier 1, 2, and 3\nEnemies"
 
 # when button pressed functions, most are self explanitory
 func _on_open_play_menu_pressed():
@@ -60,7 +67,7 @@ func _on_gamemode_item_selected(index):
 			gamemodeDetails.text = "Minesweeper under a\ntime limit! Directly\nrevealed numbers give\ntime equal to their\nnumber, mines give\n" + str(gameManager.timedTimeLossOnMineHit) + "s. Don't let time run\nout!"
 		2:
 			gameManager.gamemode = "Enemies"
-			gamemodeDetails.text = "The chasers are here"
+			gamemodeDetails.text = "Minesweeper with\nenemies! If one hits your\nmouse, the game ends.\nEach one has a unique\ngimmick, and harder\ndifficulties spawn harder\nenemies!"
 	updateLabel()
 
 # auto set the difficulty + gamemode on scene load to prevent glitches
@@ -73,3 +80,4 @@ func _ready():
 	gameManager.mineCount = 10
 	gameManager.gamemode = "Classic"
 	updateLabel()
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)

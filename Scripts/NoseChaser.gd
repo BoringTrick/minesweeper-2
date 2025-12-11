@@ -4,7 +4,7 @@ extends Area2D
 @onready var crosshair = $crosshair
 @onready var chaserLine = $chaserLine
 
-var chaserToChase : Area2D
+@export var chaserToChase : Area2D
 
 func _ready():
 	# Only connect the signal if it isn't already connected.
@@ -14,8 +14,8 @@ func _ready():
 # setup the nose to chase whatever chaser is provided
 func initalize(chaser):
 	# small delay to make the chaser line not flash for a sec
-	await get_tree().create_timer(0.1).timeout
 	chaserToChase = chaser
+	await get_tree().create_timer(0.1).timeout
 	chaserLine.global_position = Vector2(0, 0)
 	chaserLine.points[1] = chaserToChase.global_position
 	crosshair.global_position = chaserToChase.global_position

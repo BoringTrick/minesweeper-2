@@ -25,7 +25,7 @@ func initalize(chaser):
 # signal that connects for whenever a chaser moves
 func chaser_moved(chaserObject, chaserPos, chaserSpeed):
 	# make sure its our chaser
-	if chaserObject == chaserToChase:
+	if chaserObject == chaserToChase and gameManager.gameState == "playing":
 		# chasing logic, essentially chases position sent via the chaser
 		# and then sets the crosshair and line to its new position when done
 		sprite.play("chasing")

@@ -145,12 +145,17 @@ func populateBoard(clickedTile):
 	gameManager.updateState("playing")
 	
 	if gameManager.gamemode == "Enemies":
-		var evilManChaserScene = preload("res://Prefabs/EvilManChaserEnemy.tscn")
-		var evilManChaser = evilManChaserScene.instantiate()
-		evilManChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
-		evilManChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
-		$chaserLayer.add_child(evilManChaser)
-		evilManChaser.chase()
+		var earChaserScene = preload("res://Prefabs/EarChaserEnemy.tscn")
+		var earChaser = earChaserScene.instantiate()
+		earChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
+		$chaserLayer.add_child(earChaser)
+		
+		#var evilManChaserScene = preload("res://Prefabs/EvilManChaserEnemy.tscn")
+		#var evilManChaser = evilManChaserScene.instantiate()
+		#evilManChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,2))).position
+		#evilManChaser.target = $chaserLayer/mouseHitbox/collisionShape2d
+		#$chaserLayer.add_child(evilManChaser)
+		#evilManChaser.chase()
 		
 		#var mouthChaserScene = preload("res://Prefabs/MouthChaserEnemy.tscn")
 		#var mouthChaser = mouthChaserScene.instantiate()
@@ -262,6 +267,9 @@ func _process(_delta):
 						# TIMED GAMEMODE: add time equal to number clicked 
 						if gameManager.gamemode == "Timed":
 							timerQueue += gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x]
+						# ENEMIES GAMEMODE: signal for action happening for Dr Ear
+						elif gameManager.gamemode == "Enemies":
+							gameManager.emit_signal("clickEvent", mouseHitbox.get_global_mouse_position())
 						if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
 							revealNeighbors(clickedTile.x, clickedTile.y)
 					else:
@@ -279,6 +287,9 @@ func _process(_delta):
 								flagLabel.text = "Flags Remaining: " + str(flagsLeft)
 								timerQueue += gameManager.timedTimeLossOnMineHit
 				elif Input.is_action_just_pressed("flagTile"):
+					# ENEMIES GAMEMODE: signal for action happening for Dr Ear
+					if gameManager.gamemode == "Enemies":
+						gameManager.emit_signal("clickEvent", mouseHitbox.get_global_mouse_position())
 					if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 						if flagsLeft > 0:
 							flagsLeft -= 1

@@ -14,6 +14,8 @@ var timedMaxTimeAllowed = 25
 var tilesLeft = 0
 @warning_ignore("unused_signal")
 signal chaserMoved
+@warning_ignore("unused_signal")
+signal clickEvent
 @onready var mainGame = load("res://Scenes/SweeperGame.tscn")
 @onready var titleScreen = load("res://Scenes/Title.tscn")
 

@@ -23,7 +23,7 @@ func chase():
 	await get_tree().create_timer(0.1).timeout
 	while target != null and gameManager.gameState == "playing":
 		# check what longer direction is to the player, x or y and choose that
-		# afterwards, choose what direction the chaer needs to turn
+		# afterwards, choose what direction the chaser needs to turn
 		if (abs(target.global_position.x - self.global_position.x) > abs(target.global_position.y - self.global_position.y)):
 			targetPos = Vector2(target.global_position.x, self.global_position.y)
 			if (target.global_position.x - self.global_position.x) >= 0:

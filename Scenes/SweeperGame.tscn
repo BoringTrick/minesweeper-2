@@ -187,7 +187,7 @@ shape = SubResource("CircleShape2D_ry8e1")
 position = Vector2(39, 606)
 
 [node name="enemySpawn2" type="Node2D" parent="chaserLayer"]
-position = Vector2(1118, 612)
+position = Vector2(1100, 604)
 
 [connection signal="pressed" from="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/newBoard" to="." method="_on_new_board_pressed"]
 [connection signal="pressed" from="uiLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/mainMenu" to="." method="_on_main_menu_pressed"]

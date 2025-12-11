@@ -9,20 +9,45 @@ extends Node2D
 @onready var gamemodeDetails = $titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer2/gamemodeDetails
 @onready var versionLabel = $titleUI/version
 
-# updates the grid size + mine count label when called
+# secret extreme difficulty
+var timesHardClicked = 0
+
+# updates the labels for the menu when called
 func updateLabel():
+	# extreme difficulty: activate it if requirements met
+	if timesHardClicked >= 10:
+		hardButton.text = "Extreme"
+		gameManager.difficulty = "Extreme"
+		gameManager.xSize = 30
+		gameManager.ySize = 30
+		gameManager.mineCount = 225
+		gameManager.timedStartTime = 10
+		gameManager.timedMaxTimeAllowed = 20
+		gameManager.timedTimeLossOnMineHit = -15
+	else:
+		hardButton.text = "Hard"
+		gameManager.timedStartTime = 15
+		gameManager.timedMaxTimeAllowed = 25
+		gameManager.timedTimeLossOnMineHit = -10
 	difficultyLabel.text = "Grid Size: " + str(gameManager.xSize) + "x" + str(gameManager.ySize) + "\nMine Amount: " + str(gameManager.mineCount)
-	# extra details if it's timed mode
-	if gameManager.gamemode == "Timed":
-		difficultyLabel.text += "\nStart Time: " + str(gameManager.timedStartTime) + "s"
-		difficultyLabel.text += "\nMax Time: " + str(gameManager.timedMaxTimeAllowed) + "s"
-	elif gameManager.gamemode == "Enemies":
-		if gameManager.difficulty == "Easy":
-			difficultyLabel.text += "\nTier 1 Enemies"
-		elif gameManager.difficulty == "Medium":
-			difficultyLabel.text += "\nTier 1 and 2\nEnemies"
-		elif gameManager.difficulty == "Hard":
-			difficultyLabel.text += "\nTier 1, 2, and 3\nEnemies"
+	# extra details for the gamemodes
+	match gameManager.gamemode:
+		"Classic":
+			gamemodeDetails.text = "Classic minesweeper\ngameplay! Flag tiles,\ncheck the numbers,\ndont click a mine!"
+		"Timed":
+			gamemodeDetails.text = "Minesweeper under a\ntime limit! Directly\nrevealed numbers give\ntime equal to their\nnumber, mines give\n" + str(gameManager.timedTimeLossOnMineHit) + "s. Don't let time run\nout!"
+			difficultyLabel.text += "\nStart Time: " + str(gameManager.timedStartTime) + "s"
+			difficultyLabel.text += "\nMax Time: " + str(gameManager.timedMaxTimeAllowed) + "s"
+		"Enemies":
+			gamemodeDetails.text = "Minesweeper with\nenemies! If one hits your\nmouse, the game ends.\nEach one has a unique\ngimmick, and harder\ndifficulties spawn harder\nenemies!"
+			if gameManager.difficulty == "Easy":
+				difficultyLabel.text += "\nTier 1 Enemies"
+			elif gameManager.difficulty == "Medium":
+				difficultyLabel.text += "\nTier 1 and 2\nEnemies"
+			elif gameManager.difficulty == "Hard":
+				difficultyLabel.text += "\nTier 1, 2, and 3\nEnemies"
+			elif gameManager.difficulty == "Extreme":
+				difficultyLabel.text += "\nAll Enemies present!"
 
 # when button pressed functions, most are self explanitory
 func _on_open_play_menu_pressed():
@@ -38,6 +63,7 @@ func _on_easy_select_pressed():
 	gameManager.xSize = 9
 	gameManager.ySize = 9
 	gameManager.mineCount = 10
+	timesHardClicked = 0
 	updateLabel()
 
 func _on_medium_select_pressed():
@@ -45,6 +71,7 @@ func _on_medium_select_pressed():
 	gameManager.xSize = 16
 	gameManager.ySize = 16
 	gameManager.mineCount = 40
+	timesHardClicked = 0
 	updateLabel()
 
 func _on_hard_select_pressed():
@@ -52,6 +79,8 @@ func _on_hard_select_pressed():
 	gameManager.xSize = 30
 	gameManager.ySize = 16
 	gameManager.mineCount = 99
+	# secret extreme difficulty accessible via clicking hard 10 times
+	timesHardClicked += 1
 	updateLabel()
 
 func _on_start_game_pressed():
@@ -61,13 +90,10 @@ func _on_gamemode_item_selected(index):
 	match index:
 		0:
 			gameManager.gamemode = "Classic"
-			gamemodeDetails.text = "Classic minesweeper\ngameplay! Flag tiles,\ncheck the numbers,\ndont click a mine!"
 		1:
 			gameManager.gamemode = "Timed"
-			gamemodeDetails.text = "Minesweeper under a\ntime limit! Directly\nrevealed numbers give\ntime equal to their\nnumber, mines give\n" + str(gameManager.timedTimeLossOnMineHit) + "s. Don't let time run\nout!"
 		2:
 			gameManager.gamemode = "Enemies"
-			gamemodeDetails.text = "Minesweeper with\nenemies! If one hits your\nmouse, the game ends.\nEach one has a unique\ngimmick, and harder\ndifficulties spawn harder\nenemies!"
 	updateLabel()
 
 # auto set the difficulty + gamemode on scene load to prevent glitches

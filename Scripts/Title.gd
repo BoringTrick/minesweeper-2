@@ -8,6 +8,7 @@ extends Node2D
 @onready var hardButton = $titleUI/playPanel/VBoxContainer/MarginContainer/HBoxContainer/hardSelect
 @onready var gamemodeDetails = $titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer2/gamemodeDetails
 @onready var versionLabel = $titleUI/version
+@onready var controlsPanel = $titleUI/controlsPanel
 
 # secret extreme difficulty
 var timesHardClicked = 0
@@ -15,7 +16,7 @@ var timesHardClicked = 0
 # updates the labels for the menu when called
 func updateLabel():
 	# extreme difficulty: activate it if requirements met
-	if timesHardClicked >= 10:
+	if timesHardClicked >= 5:
 		hardButton.text = "Extreme"
 		gameManager.difficulty = "Extreme"
 		gameManager.xSize = 30
@@ -95,6 +96,19 @@ func _on_gamemode_item_selected(index):
 		2:
 			gameManager.gamemode = "Enemies"
 	updateLabel()
+
+# open the controls menu
+func _on_controls_pressed():
+	mainMenuVbox.hide()
+	controlsPanel.show()
+
+func _on_exit_menu_controls_pressed():
+	controlsPanel.hide()
+	mainMenuVbox.show()
+
+# quit game button
+func _on_quit_pressed():
+	get_tree().quit()
 
 # auto set the difficulty + gamemode on scene load to prevent glitches
 func _ready():

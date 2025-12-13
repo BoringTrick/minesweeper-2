@@ -30,6 +30,16 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "Play!"
 
+[node name="controls" type="Button" parent="titleUI/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Controls"
+
+[node name="quit" type="Button" parent="titleUI/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Quit"
+
 [node name="logoRect" type="TextureRect" parent="titleUI"]
 texture_filter = 1
 anchors_preset = 5
@@ -157,6 +167,60 @@ dont click a mine!"
 layout_mode = 2
 theme_override_constants/margin_left = 85
 
+[node name="controlsPanel" type="PanelContainer" parent="titleUI"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -278.5
+offset_top = -158.25
+offset_right = 278.5
+offset_bottom = 158.25
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="titleUI/controlsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="label" type="Label" parent="titleUI/controlsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "WASD or Arrow Keys to move the Camera during a board!"
+horizontal_alignment = 1
+
+[node name="label4" type="Label" parent="titleUI/controlsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "i to zoom in the camera! O to zoom out!"
+horizontal_alignment = 1
+
+[node name="label2" type="Label" parent="titleUI/controlsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Right click to flag a tile!"
+horizontal_alignment = 1
+
+[node name="label3" type="Label" parent="titleUI/controlsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Left click to reveal a tile!"
+horizontal_alignment = 1
+
+[node name="marginContainer" type="MarginContainer" parent="titleUI/controlsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 150
+theme_override_constants/margin_top = 33
+theme_override_constants/margin_right = 150
+
+[node name="exitMenu" type="Button" parent="titleUI/controlsPanel/VBoxContainer/marginContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Exit Menu"
+
 [node name="version" type="Label" parent="titleUI"]
 anchors_preset = 3
 anchor_left = 1.0
@@ -181,9 +245,12 @@ script = ExtResource("5_uth7j")
 [node name="camera" type="Camera2D" parent="."]
 
 [connection signal="pressed" from="titleUI/VBoxContainer/openPlayMenu" to="." method="_on_open_play_menu_pressed"]
+[connection signal="pressed" from="titleUI/VBoxContainer/controls" to="." method="_on_controls_pressed"]
+[connection signal="pressed" from="titleUI/VBoxContainer/quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="titleUI/playPanel/VBoxContainer/MarginContainer/HBoxContainer/easySelect" to="." method="_on_easy_select_pressed"]
 [connection signal="pressed" from="titleUI/playPanel/VBoxContainer/MarginContainer/HBoxContainer/mediumSelect" to="." method="_on_medium_select_pressed"]
 [connection signal="pressed" from="titleUI/playPanel/VBoxContainer/MarginContainer/HBoxContainer/hardSelect" to="." method="_on_hard_select_pressed"]
 [connection signal="pressed" from="titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer/startGame" to="." method="_on_start_game_pressed"]
 [connection signal="pressed" from="titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer/exitMenu" to="." method="_on_exit_menu_pressed"]
 [connection signal="item_selected" from="titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer2/gamemode" to="." method="_on_gamemode_item_selected"]
+[connection signal="pressed" from="titleUI/controlsPanel/VBoxContainer/marginContainer/exitMenu" to="." method="_on_exit_menu_controls_pressed"]

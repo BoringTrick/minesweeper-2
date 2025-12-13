@@ -209,10 +209,16 @@ theme_override_font_sizes/font_size = 18
 text = "Left click to reveal a tile!"
 horizontal_alignment = 1
 
+[node name="label5" type="Label" parent="titleUI/controlsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Escape to open the pause menu!"
+horizontal_alignment = 1
+
 [node name="marginContainer" type="MarginContainer" parent="titleUI/controlsPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 150
-theme_override_constants/margin_top = 33
+theme_override_constants/margin_top = 11
 theme_override_constants/margin_right = 150
 
 [node name="exitMenu" type="Button" parent="titleUI/controlsPanel/VBoxContainer/marginContainer"]

@@ -182,31 +182,6 @@ mouse_filter = 2
 texture = ExtResource("15_1jkco")
 metadata/_edit_use_anchors_ = true
 
-[node name="mouseLayer" type="CanvasLayer" parent="mouseLayer"]
-layer = 5
-
-[node name="mouseHitbox" type="Area2D" parent="mouseLayer/mouseLayer"]
-top_level = true
-z_index = 10
-z_as_relative = false
-position = Vector2(30, -42)
-
-[node name="collisionShape2d" type="CollisionShape2D" parent="mouseLayer/mouseLayer/mouseHitbox"]
-position = Vector2(6.9999995, 12.999999)
-rotation = -0.33330753
-scale = Vector2(0.9263611, 1.04)
-shape = SubResource("CapsuleShape2D_1jkco")
-
-[node name="textureRect" type="TextureRect" parent="mouseLayer/mouseLayer/mouseHitbox"]
-texture_filter = 1
-offset_left = -3.0
-offset_top = -3.0
-offset_right = 22.0
-offset_bottom = 26.0
-mouse_filter = 2
-texture = ExtResource("15_1jkco")
-metadata/_edit_use_anchors_ = true
-
 [connection signal="pressed" from="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/newBoard" to="." method="_on_new_board_pressed"]
 [connection signal="pressed" from="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/mainMenu" to="." method="_on_main_menu_pressed"]
 [connection signal="area_entered" from="mouseLayer/mouseHitbox" to="." method="_on_mouse_hitbox_area_entered"]

@@ -5,11 +5,9 @@ extends Node2D
 @onready var camera = $minesNumbersLayer/camera
 @onready var timerLabel = $uiLayer/timerLabel
 @onready var flagLabel = $uiLayer/flagsLeftLabel
-@onready var timerIcon = $uiLayer/timedModeIcon
 @onready var endMenuStats = $endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/stats
 @onready var endMenuLabel = $endMenuLayer/endMenu/vBoxContainer/endLabel
 @onready var endMenu = $endMenuLayer/endMenu
-@onready var timedTimeBonusText = $uiLayer/timedModeTimeBonus
 @onready var mouseHitbox = $mouseLayer/mouseHitbox
 
 # useful resources:
@@ -24,12 +22,11 @@ var flagsLeft = gameManager.mineCount
 var dx = [-1, -1, -1, 0, 0, 1, 1, 1]
 var dy = [-1, 0, 1, -1, 1, -1, 0, 1]
 
+# the current gamemode scene loaded in
+var gamemodeScene
+
 # backend array that stores mines and numbers
 var gridArray = []
-
-# TIMED GAMEMODE: mines clicked stat and the timer queue for timer add/subtraction
-var minesClicked = 0
-var timerQueue = 0
 
 # ENEMIES GAMEMODE: difficulty arrays, used for enemies for specific difficulties
 var easyEnemies = ["Mouth", "Nose"]
@@ -39,6 +36,11 @@ var hardEnemies = ["Ritalin", "Groni", "EvilMan"]
 # returns true if the input row and column are inside the board size
 func isValid(row, col):
 	return (row >= 0) and (row < gameManager.xSize) and (col >= 0) and (col < gameManager.ySize)
+
+# utility function to update the flag text in the corner
+func changeFlagAmount(amount):
+	flagsLeft += amount
+	flagLabel.text = "Flags Remaining: " + str(flagsLeft)
 
 # recursive function which reveals the neighbors of a tile
 # if the neighbor is a 0, recurse and reveal its neighbors
@@ -50,9 +52,13 @@ func revealNeighbors(row, col):
 		var newCol = col + dy[d]
 		if (isValid(newRow, newCol)):
 			# if the cover tile isn't empty (very important, infinite loop if not here)
-			if coverLayer.get_cell_atlas_coords(Vector2i(newRow, newCol)) != Vector2i(-1,-1):
+			if coverLayer.get_cell_atlas_coords(Vector2i(newRow, newCol)) != Vector2i(-1, -1):
+				if coverLayer.get_cell_atlas_coords(Vector2i(newRow, newCol)) == Vector2i(1, 1):
+					changeFlagAmount(1)
 				coverLayer.erase_cell(Vector2i(newRow, newCol))
 				gameManager.tilesLeft -= 1
+				# emit a signal when tile revealed via neighbor reveal
+				gameManager.emit_signal("tileRevealed", gridArray[(newCol * gameManager.xSize) + newRow], "neighborRevealed")
 				if gridArray[(newCol * gameManager.xSize) + newRow] == 0:
 					revealNeighbors(newRow, newCol)
 
@@ -89,16 +95,14 @@ func populateEndScreen():
 	endMenuStats.text += "\nDifficulty: " + gameManager.difficulty
 	endMenuStats.text += "\nGrid Size: " + str(gameManager.xSize) + "x" + str(gameManager.ySize)
 	endMenuStats.text += "\nMine Amount: " + str(gameManager.mineCount)
-	if gameManager.gamemode == "Timed":
-		endMenuStats.text += "\nMines Hit: " + str(minesClicked)
+	if gameManager.gamemode != "Classic":
+		endMenuStats.text += gamemodeScene.endScreenText("common")
 
 # set the game to the game over state and show all mines + incorrect flags
 func gameOver(incorrectTile):
 	if gameManager.gameState == "playing":
 		gameManager.updateState("ended")
 		var incorrectFlags = 0
-		if gameManager.gamemode == "Timed":
-			$timer.stop()
 		if isValid(incorrectTile.x, incorrectTile.y):
 			numberLayer.set_cell(incorrectTile, 0, Vector2i(3, 1), 0)
 		for y in gameManager.ySize:
@@ -109,13 +113,17 @@ func gameOver(incorrectTile):
 					coverLayer.set_cell(Vector2i(x, y), 0, Vector2i(4, 1), 0)
 					incorrectFlags += 1
 		endMenuLabel.text = "Game Over"
-		if gameManager.gamemode != "Timed":
-			endMenuStats.text = "Time Played: %02d:%02d.%02d" % [mins, secs, millis]
-		else:
-			endMenuStats.text = ""
+		if gameManager.hideGameTimer == false:
+			endMenuStats.text += "\nTime Played: %02d:%02d.%02d" % [mins, secs, millis]
 		populateEndScreen()
-		endMenuStats.text += "\nCorrect Flags: " + str((gameManager.mineCount - flagsLeft) - incorrectFlags)
+		# bugfix: timed mode has clicked mines count as a correct flag
+		if gameManager.gameEndWhenMineHit == true:
+			endMenuStats.text += "\nCorrect Flags: " + str((gameManager.mineCount - flagsLeft) - incorrectFlags)
+		else:
+			endMenuStats.text += "\nCorrect Flags: " + str(((gameManager.mineCount - (flagsLeft + gameManager.minesClicked)) - incorrectFlags))
 		endMenuStats.text += "\nIncorrect Flags: " + str(incorrectFlags)
+		if gameManager.gamemode != "Classic":
+			endMenuStats.text += gamemodeScene.endScreenText("ended")
 		endMenu.show()
 
 # runs when the game wins via uncovering every non-mine
@@ -123,13 +131,11 @@ func gameOver(incorrectTile):
 func winGame():
 	if gameManager.gameState == "playing":
 		gameManager.updateState("won")
-		if gameManager.gamemode == "Timed":
-			$timer.stop()
 		endMenuLabel.text = "You Won!"
-		if gameManager.gamemode != "Timed":
+		if gameManager.hideGameTimer == false:
 			endMenuStats.text = "Time Played: %02d:%02d.%02d" % [mins, secs, millis]
-		else:
-			endMenuStats.text = "Time Remaining: %02d.%02d" % [int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
+		if gameManager.gamemode != "Classic":
+			endMenuStats.text += gamemodeScene.endScreenText("won")
 		populateEndScreen()
 		endMenu.show()
 
@@ -264,8 +270,18 @@ func _ready():
 	# change the gamestate
 	gameManager.updateState("setup")
 	
-	# set up the tiles left to win the game
+	# default values for these toggles, can be overridden via a gamemode
+	gameManager.gameEndWhenMineHit = true
+	gameManager.hideGameTimer = false
+	
+	# load in the current gamemode
+	if gameManager.gamemode != "Classic":
+		gamemodeScene = load("res://GameModes/" + str(gameManager.gamemode) + ".tscn").instantiate()
+		self.add_child(gamemodeScene)
+	
+	# set up the tiles left to win the game and reset mines clicked
 	gameManager.tilesLeft = (gameManager.xSize * gameManager.ySize) - gameManager.mineCount
+	gameManager.minesClicked = 0
 	
 	# this loop generates cover cells for the entire minefield
 	for y in gameManager.ySize:
@@ -292,20 +308,21 @@ func _ready():
 		camera.zoom = Vector2(yRatio,yRatio)
 	
 	# set up the flag label
-	flagLabel.text = "Flags Remaining: " + str(flagsLeft)
+	changeFlagAmount(0)
 	
-	# set up the custom timer label for timed mode
-	if gameManager.gamemode == "Timed":
-		timerLabel.position = Vector2(441, 23)
-		timerIcon.show()
-		$timer.wait_time = gameManager.timedStartTime
-		timerLabel.text = "%02d.%02d" % [int($timer.wait_time) % 60, fmod($timer.wait_time, 1) * 100]
+	# global variable used by gamemodes
+	if gameManager.hideGameTimer == true:
+		timerLabel.hide()
 	
 	# hide the chaser layer if the gamemode isn't enemies, hide the mouse if it is
 	if gameManager.gamemode != "Enemies":
 		$chaserLayer.hide()
 	else:
 		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	
+	# connect the game over signal
+	if !gameManager.is_connected("gameOver", onGameOverSignal):
+		gameManager.gameOver.connect(onGameOverSignal)
 	
 	gameManager.updateState("before")
 
@@ -314,7 +331,6 @@ var timeElapsed = 0.0
 var mins = 0.0
 var secs = 0.0
 var millis = 0.0
-var timedTimeLeft = gameManager.timedStartTime
 
 # updates the timer and handles input events
 func _process(_delta):
@@ -332,50 +348,40 @@ func _process(_delta):
 			if isValid(clickedTile.x, clickedTile.y) and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(-1,-1) and gameManager.gameState == "playing":
 				if Input.is_action_just_pressed("revealTile") and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 					coverLayer.erase_cell(clickedTile)
+					# emit a signal when tile revealed normally
+					gameManager.emit_signal("tileRevealed", gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x], "normalReveal")
 					if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] != -1:
 						gameManager.tilesLeft -= 1
-						# TIMED GAMEMODE: add time equal to number clicked 
-						if gameManager.gamemode == "Timed":
-							timerQueue += gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x]
 						# ENEMIES GAMEMODE: signal for action happening for Dr Ear
-						elif gameManager.gamemode == "Enemies":
+						if gameManager.gamemode == "Enemies":
 							gameManager.emit_signal("clickEvent", mouseHitbox.get_global_mouse_position())
 						if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
 							revealNeighbors(clickedTile.x, clickedTile.y)
 					else:
-						minesClicked += 1
-						# TIMED GAMEMODE: time subtraction on mine hit instead of gameover
-						if gameManager.gamemode != "Timed":
+						gameManager.minesClicked += 1
+						# global toggle for if the game should end when mine hit
+						if gameManager.gameEndWhenMineHit == true:
 							gameOver(clickedTile)
 						else:
 							numberLayer.set_cell(clickedTile, 0, Vector2i(3, 1), 0)
-							if ($timer.time_left + gameManager.timedTimeLossOnMineHit) <= 0:
-								timerQueue += gameManager.timedTimeLossOnMineHit
-								$timer.start(0.00001)
-							else:
-								flagsLeft -= 1
-								flagLabel.text = "Flags Remaining: " + str(flagsLeft)
-								timerQueue += gameManager.timedTimeLossOnMineHit
+							changeFlagAmount(-1)
 				elif Input.is_action_just_pressed("flagTile"):
 					# ENEMIES GAMEMODE: signal for action happening for Dr Ear
 					if gameManager.gamemode == "Enemies":
 						gameManager.emit_signal("clickEvent", mouseHitbox.get_global_mouse_position())
 					if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 						if flagsLeft > 0:
-							flagsLeft -= 1
-							flagLabel.text = "Flags Remaining: " + str(flagsLeft)
+							changeFlagAmount(-1)
 							coverLayer.set_cell(clickedTile, 0, Vector2i(1, 1), 0)
 					else:
-						flagsLeft += 1
-						flagLabel.text = "Flags Remaining: " + str(flagsLeft)
+						changeFlagAmount(1)
 						coverLayer.set_cell(clickedTile, 0, Vector2i(0, 1), 0)
 			elif isValid(clickedTile.x, clickedTile.y) and gameManager.gameState == "before" and Input.is_action_just_pressed("revealTile"):
 				populateBoard(clickedTile)
 				coverLayer.erase_cell(clickedTile)
-				# TIMED GAMEMODE: start the timer
-				if gameManager.gamemode == "Timed":
-					$timer.start()
 				gameManager.tilesLeft -= 1
+				# emit a signal when tile revealed normally
+				gameManager.emit_signal("tileRevealed", gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x], "firstTile")
 				if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
 					revealNeighbors(clickedTile.x, clickedTile.y)
 			
@@ -383,55 +389,19 @@ func _process(_delta):
 			if gameManager.tilesLeft <= 0:
 				winGame()
 	
-	# TIMED GAMEMODE: timer queue: if multiple timer events happen at
-	# the same time they all get processed at once
-	# this code also handles the text that appears under the timer
-	if timerQueue != 0 and gameManager.gameState == "playing" and gameManager.gamemode == "Timed":
-		# cap the time if it's over the max time allowed
-		if ($timer.time_left + timerQueue) > gameManager.timedMaxTimeAllowed:
-			var amountToCapWith = ($timer.time_left + timerQueue) - gameManager.timedMaxTimeAllowed
-			timerQueue = int(floor(timerQueue - amountToCapWith))
-		var bonusText = timedTimeBonusText.duplicate()
-		$uiLayer.add_child(bonusText)
-		if timerQueue > 0:
-			bonusText.text = "+" + str(timerQueue)
-			bonusText.add_theme_color_override("font_color", Color.GREEN)
-		elif timerQueue == 0:
-			bonusText.text = "+" + str(timerQueue)
-			bonusText.add_theme_color_override("font_color", Color.WHITE)
-		else:
-			bonusText.text = str(timerQueue)
-			bonusText.add_theme_color_override("font_color", Color.RED)
-		bonusText.show()
-		# use tweens to animate the text appearing under the timer
-		var tween = get_tree().create_tween()
-		tween.tween_property(bonusText, "modulate", Color(0.0, 0.0, 0.0, 0.0), 1.5)
-		tween.parallel().tween_property(bonusText, "position", Vector2(bonusText.position.x, (bonusText.position.y + 35)), 1.5)
-		tween.tween_callback(bonusText.queue_free)
-		$timer.start($timer.time_left + timerQueue)
-		timerQueue = 0
-	
 	# ENEMIES GAMEMODE: give the mouse cursor a hitbox
 	if gameManager.gamemode == "Enemies":
 		mouseHitbox.global_position = mouseHitbox.get_global_mouse_position()
 	
-	# timer code for the top right timer, count up for normal count down for timed
-	if gameManager.gameState == "playing":
-		if gameManager.gamemode == "Timed":
-			timedTimeLeft = $timer.time_left
-			timerLabel.text = "%02d.%02d" % [int(timedTimeLeft) % 60, fmod(timedTimeLeft, 1) * 100]
-		else:
-			timeElapsed += _delta
-			mins = timeElapsed / 60
-			secs = fmod(timeElapsed, 60)
-			millis = fmod(timeElapsed, 1) * 100
-			timerLabel.text = "%02d:%02d.%02d" % [mins, secs, millis]
+	# timer code for the top right timer
+	if gameManager.gameState == "playing" and gameManager.hideGameTimer == false:
+		timeElapsed += _delta
+		mins = timeElapsed / 60
+		secs = fmod(timeElapsed, 60)
+		millis = fmod(timeElapsed, 1) * 100
+		timerLabel.text = "%02d:%02d.%02d" % [mins, secs, millis]
 
 # ---SIGNALS---
-
-# timer mode: when time runs out
-func _on_timer_timeout():
-	gameOver(Vector2i(-1, -1))
 
 # win/loss menu: new board pressed
 func _on_new_board_pressed():
@@ -448,3 +418,6 @@ func _on_mouse_hitbox_area_entered(area):
 	if gameManager.gameState == "playing":
 		if area.is_in_group("Enemy"):
 			gameOver(Vector2i(-1, -1))
+
+func onGameOverSignal(lossTile):
+	gameOver(lossTile)

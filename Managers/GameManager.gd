@@ -6,23 +6,34 @@ var gamemode = "Classic"
 var xSize = 9
 var ySize = 9
 var mineCount = 10
+var tilesLeft = 0
+var minesClicked = 0
 var previousState = "none"
 var gameState = "title"
+var gameEndWhenMineHit = true
+var hideGameTimer = false
 var timedStartTime = 15
 var timedTimeLossOnMineHit = -10
 var timedMaxTimeAllowed = 25
-var tilesLeft = 0
+@onready var mainGame = load("res://Scenes/SweeperGame.tscn")
+@onready var titleScreen = load("res://Scenes/Title.tscn")
+
+# signals used across the game and gamemodes
 @warning_ignore("unused_signal")
 signal chaserMoved
 @warning_ignore("unused_signal")
 signal clickEvent
-@onready var mainGame = load("res://Scenes/SweeperGame.tscn")
-@onready var titleScreen = load("res://Scenes/Title.tscn")
+@warning_ignore("unused_signal")
+signal gameOver
+@warning_ignore("unused_signal")
+signal tileRevealed
+signal gameStateChanged
 
 # updates the internal game state
 func updateState(newState):
 	previousState = gameState
 	gameState = newState
+	emit_signal("gameStateChanged")
 
 # toggles the pause menu on or off. Used to have it's own state but it created
 # bugs if the state got outside the menu

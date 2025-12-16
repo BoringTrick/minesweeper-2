@@ -1,0 +1,59 @@
+[gd_scene load_steps=5 format=3 uid="uid://bslonof6xd3vq"]
+
+[ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://GameObjects/LabelSettings/GUIText.tres" id="1_em37r"]
+[ext_resource type="Script" uid="uid://so1hfembkvdp" path="res://GameModes/Timed.gd" id="1_x6rs6"]
+[ext_resource type="FontFile" uid="uid://cexbhfqebmb03" path="res://Assets/Fonts/KenneyRocket.ttf" id="2_x6rs6"]
+[ext_resource type="Texture2D" uid="uid://bufmqeyolnxph" path="res://Assets/Static/TimedTimer.png" id="3_cylmg"]
+
+[node name="timed" type="CanvasLayer"]
+layer = 2
+script = ExtResource("1_x6rs6")
+
+[node name="timerLabel" type="Label" parent="."]
+texture_filter = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -711.0
+offset_top = 23.0
+offset_right = -484.0
+offset_bottom = 58.0
+grow_horizontal = 0
+text = "00.00"
+label_settings = ExtResource("1_em37r")
+horizontal_alignment = 2
+
+[node name="bonusText" type="Label" parent="."]
+visible = false
+texture_filter = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -647.0
+offset_top = 43.0
+offset_right = -540.0
+offset_bottom = 78.0
+grow_horizontal = 0
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("2_x6rs6")
+theme_override_font_sizes/font_size = 25
+text = "+0"
+horizontal_alignment = 2
+
+[node name="timerIcon" type="TextureRect" parent="."]
+texture_filter = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -682.0
+offset_top = -7.0000005
+offset_right = -561.0
+offset_bottom = 114.0
+grow_horizontal = 0
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("3_cylmg")
+
+[node name="timer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="timer" to="." method="_on_timer_timeout"]

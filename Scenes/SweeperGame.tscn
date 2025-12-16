@@ -1,12 +1,10 @@
-[gd_scene load_steps=18 format=3 uid="uid://dtobkxcuvlafg"]
+[gd_scene load_steps=16 format=3 uid="uid://dtobkxcuvlafg"]
 
 [ext_resource type="Script" uid="uid://bt4v6eksvjqka" path="res://Scripts/SweeperGame.gd" id="1_p5k5w"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://GameObjects/Tilemaps/SweeperTiles.tres" id="2_ve1wu"]
 [ext_resource type="Script" uid="uid://c1wvrqymeaeij" path="res://Scripts/CameraControl.gd" id="3_ry8e1"]
 [ext_resource type="LabelSettings" uid="uid://byulm3hb85ui8" path="res://GameObjects/LabelSettings/GUIText.tres" id="4_1jkco"]
 [ext_resource type="Texture2D" uid="uid://d4nmwmycbw40p" path="res://Assets/Backgrounds/Stars/0.png" id="5_bfip3"]
-[ext_resource type="FontFile" uid="uid://cexbhfqebmb03" path="res://Assets/Fonts/KenneyRocket.ttf" id="5_ry8e1"]
-[ext_resource type="Texture2D" uid="uid://bufmqeyolnxph" path="res://Assets/Static/TimedTimer.png" id="5_ve1wu"]
 [ext_resource type="Texture2D" uid="uid://dw8gk604x4t0y" path="res://Assets/Backgrounds/Stars/1.png" id="6_n3lgt"]
 [ext_resource type="Texture2D" uid="uid://c2fdvvpir0j1u" path="res://Assets/Backgrounds/Stars/2.png" id="7_kvl84"]
 [ext_resource type="Texture2D" uid="uid://b7x6ltatgervi" path="res://Assets/Backgrounds/Stars/3.png" id="8_7ln24"]
@@ -78,37 +76,6 @@ text = "00:00.00"
 label_settings = ExtResource("4_1jkco")
 horizontal_alignment = 2
 
-[node name="timedModeTimeBonus" type="Label" parent="uiLayer"]
-visible = false
-texture_filter = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -647.0
-offset_top = 43.0
-offset_right = -540.0
-offset_bottom = 78.0
-grow_horizontal = 0
-theme_override_constants/outline_size = 5
-theme_override_fonts/font = ExtResource("5_ry8e1")
-theme_override_font_sizes/font_size = 25
-text = "+0"
-horizontal_alignment = 2
-
-[node name="timedModeIcon" type="TextureRect" parent="uiLayer"]
-visible = false
-texture_filter = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -682.0
-offset_top = -7.0000005
-offset_right = -561.0
-offset_bottom = 114.0
-grow_horizontal = 0
-scale = Vector2(0.75, 0.75)
-texture = ExtResource("5_ve1wu")
-
 [node name="backgroundLayer" type="CanvasLayer" parent="."]
 layer = -10
 
@@ -124,11 +91,8 @@ grow_vertical = 2
 texture = SubResource("AnimatedTexture_efvxm")
 stretch_mode = 1
 
-[node name="timer" type="Timer" parent="."]
-one_shot = true
-
 [node name="chaserLayer" type="CanvasLayer" parent="."]
-layer = 2
+layer = 3
 
 [node name="enemySpawn1" type="Node2D" parent="chaserLayer"]
 position = Vector2(39, 606)
@@ -146,7 +110,7 @@ position = Vector2(280, 605)
 position = Vector2(813, 605)
 
 [node name="endMenuLayer" type="CanvasLayer" parent="."]
-layer = 3
+layer = 4
 
 [node name="endMenu" type="PanelContainer" parent="endMenuLayer"]
 visible = false
@@ -182,11 +146,6 @@ layout_mode = 2
 [node name="stats" type="Label" parent="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 19
-text = "Time Played: 00:00.00
-Gamemode: Classic
-Difficulty: Easy
-Grid Size: 9x9
-Mine Amount: 10"
 
 [node name="newBoard" type="Button" parent="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer"]
 layout_mode = 2
@@ -199,7 +158,7 @@ theme_override_font_sizes/font_size = 27
 text = "Return to Title"
 
 [node name="mouseLayer" type="CanvasLayer" parent="."]
-layer = 4
+layer = 5
 
 [node name="mouseHitbox" type="Area2D" parent="mouseLayer"]
 top_level = true
@@ -223,7 +182,31 @@ mouse_filter = 2
 texture = ExtResource("15_1jkco")
 metadata/_edit_use_anchors_ = true
 
-[connection signal="timeout" from="timer" to="." method="_on_timer_timeout"]
+[node name="mouseLayer" type="CanvasLayer" parent="mouseLayer"]
+layer = 5
+
+[node name="mouseHitbox" type="Area2D" parent="mouseLayer/mouseLayer"]
+top_level = true
+z_index = 10
+z_as_relative = false
+position = Vector2(30, -42)
+
+[node name="collisionShape2d" type="CollisionShape2D" parent="mouseLayer/mouseLayer/mouseHitbox"]
+position = Vector2(6.9999995, 12.999999)
+rotation = -0.33330753
+scale = Vector2(0.9263611, 1.04)
+shape = SubResource("CapsuleShape2D_1jkco")
+
+[node name="textureRect" type="TextureRect" parent="mouseLayer/mouseLayer/mouseHitbox"]
+texture_filter = 1
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 22.0
+offset_bottom = 26.0
+mouse_filter = 2
+texture = ExtResource("15_1jkco")
+metadata/_edit_use_anchors_ = true
+
 [connection signal="pressed" from="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/newBoard" to="." method="_on_new_board_pressed"]
 [connection signal="pressed" from="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/mainMenu" to="." method="_on_main_menu_pressed"]
 [connection signal="area_entered" from="mouseLayer/mouseHitbox" to="." method="_on_mouse_hitbox_area_entered"]

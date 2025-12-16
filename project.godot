@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Minesweeper 2"
 config/description="Minesweeper as you know it.. but with some extra gamemodes! Click the tiles, not the mines!"
-config/version="1.0.1.0"
+config/version="1.1.0.0-DEV"
 run/main_scene="uid://bu0llecu4l60l"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="uid://tsnq5yd2aorj"

@@ -3,19 +3,26 @@ extends CanvasLayer
 @onready var timerLabel = $timerLabel
 @onready var timer = $timer
 
+# variables used in the gamemode
 var timerQueue = 0
 var timeLeft = gameManager.timedStartTime
 
+# set up the gamemode when it loads
 func _ready():
+	# connect some signals if they arent connected already
 	if !gameManager.is_connected("gameStateChanged", onGameStateChange):
 		gameManager.gameStateChanged.connect(onGameStateChange)
 	if !gameManager.is_connected("tileRevealed", tileRevealed):
 		gameManager.tileRevealed.connect(tileRevealed)
+	# overwrite some default game variables for this gamemode
 	gameManager.gameEndWhenMineHit = false
 	gameManager.hideGameTimer = true
+	# set up the timer
 	timer.wait_time = gameManager.timedStartTime
 	timerLabel.text = "%02d.%02d" % [int($timer.wait_time) % 60, fmod($timer.wait_time, 1) * 100]
 
+# handles timer queue, the timer on screen, and losing if you 
+# hit a mine and run out of time
 func _process(_delta):
 	# timer queue: if multiple timer events happen at
 	# the same time they all get processed at once
@@ -28,6 +35,7 @@ func _process(_delta):
 		elif (timer.time_left + timerQueue) > gameManager.timedMaxTimeAllowed:
 			var amountToCapWith = (timer.time_left + timerQueue) - gameManager.timedMaxTimeAllowed
 			timerQueue = int(floor(timerQueue - amountToCapWith))
+		# animated text which appears under timer when timer event occurs
 		var bonusText = $bonusText.duplicate()
 		$".".add_child(bonusText)
 		if timerQueue > 0:
@@ -55,11 +63,14 @@ func _process(_delta):
 			timer.emit_signal("timeout")
 		timerQueue = 0
 	
-	# countdown timer
+	# update the visual countdown timer
 	if gameManager.gameState == "playing":
 		timeLeft = timer.time_left
 		timerLabel.text = "%02d.%02d" % [int(timeLeft) % 60, fmod(timeLeft, 1) * 100]
 
+# function which is called by the main game script, can either call
+# with won, ended, or common. Must return something, can just return
+# nothing if a specific context has no new stats to add
 func endScreenText(context):
 	var endText = ""
 	match context:
@@ -77,12 +88,15 @@ func _on_timer_timeout():
 	timerLabel.text = "%02d.%02d" % [int(timeLeft) % 60, fmod(timeLeft, 1) * 100]
 	gameManager.emit_signal("gameOver", Vector2i(-1, -1))
 
+# stop the timer if the game ends or wins, start it when playing
 func onGameStateChange():
 	if gameManager.gameState == "ended" or gameManager.gameState == "won":
 		timer.stop()
 	elif gameManager.gameState == "playing":
 		timer.start(timeLeft)
 
+# add to the timer queue when a tile is revealed under the right
+# circumstances
 func tileRevealed(number, context):
 	if number == -1:
 		timerQueue += gameManager.timedTimeLossOnMineHit

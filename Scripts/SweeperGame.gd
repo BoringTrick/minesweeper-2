@@ -53,6 +53,7 @@ func revealNeighbors(row, col):
 		if (isValid(newRow, newCol)):
 			# if the cover tile isn't empty (very important, infinite loop if not here)
 			if coverLayer.get_cell_atlas_coords(Vector2i(newRow, newCol)) != Vector2i(-1, -1):
+				# bugfix: dont make flags vanish forever if auto revealed
 				if coverLayer.get_cell_atlas_coords(Vector2i(newRow, newCol)) == Vector2i(1, 1):
 					changeFlagAmount(1)
 				coverLayer.erase_cell(Vector2i(newRow, newCol))
@@ -90,6 +91,7 @@ func addMine(clickedTile):
 				gridArray[(mineY * gameManager.xSize) + mineX] = -1
 
 # set common stats for the end screen for winning and losing
+# also accesses current gamemode for stats if applicable
 func populateEndScreen():
 	endMenuStats.text += "\nGamemode: " + gameManager.gamemode
 	endMenuStats.text += "\nDifficulty: " + gameManager.difficulty
@@ -99,6 +101,7 @@ func populateEndScreen():
 		endMenuStats.text += gamemodeScene.endScreenText("common")
 
 # set the game to the game over state and show all mines + incorrect flags
+# also sets lose screen stats
 func gameOver(incorrectTile):
 	if gameManager.gameState == "playing":
 		gameManager.updateState("ended")
@@ -419,5 +422,6 @@ func _on_mouse_hitbox_area_entered(area):
 		if area.is_in_group("Enemy"):
 			gameOver(Vector2i(-1, -1))
 
+# signal which loses the game when called, used with gamemodes
 func onGameOverSignal(lossTile):
 	gameOver(lossTile)

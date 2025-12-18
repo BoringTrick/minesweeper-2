@@ -8,7 +8,6 @@ extends Node2D
 @onready var endMenuStats = $endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/stats
 @onready var endMenuLabel = $endMenuLayer/endMenu/vBoxContainer/endLabel
 @onready var endMenu = $endMenuLayer/endMenu
-@onready var mouseHitbox = $mouseLayer/mouseHitbox
 
 # useful resources:
 # https://forum.godotengine.org/t/how-to-declare-2d-arrays-matrices-in-gdscript/38638/5
@@ -27,11 +26,6 @@ var gamemodeScene
 
 # backend array that stores mines and numbers
 var gridArray = []
-
-# ENEMIES GAMEMODE: difficulty arrays, used for enemies for specific difficulties
-var easyEnemies = ["Mouth", "Nose"]
-var mediumEnemies = ["Eye", "Ear"]
-var hardEnemies = ["Ritalin", "Groni", "EvilMan"]
 
 # returns true if the input row and column are inside the board size
 func isValid(row, col):
@@ -173,100 +167,6 @@ func populateBoard(clickedTile):
 				numberLayer.set_cell(Vector2i(x, y), 0, Vector2i(2, 1), 0)
 	# set the game to be active after everything's generated
 	gameManager.updateState("playing")
-	
-	if gameManager.gamemode == "Enemies":
-		if gameManager.difficulty != "Extreme":
-			# add a mouth and nose chaser, make the nose chase the mouth
-			var mouthChaserScene = load("res://Prefabs/MouthChaserEnemy.tscn")
-			var noseChaserScene = load("res://Prefabs/NoseChaserEnemy.tscn")
-			var mouthChaser = mouthChaserScene.instantiate()
-			
-			mouthChaser.position = $chaserLayer/enemySpawn1.position
-			$chaserLayer.add_child(mouthChaser)
-			mouthChaser.chase()
-			
-			var noseChaser = noseChaserScene.instantiate()
-			noseChaser.position = $chaserLayer/enemySpawn2.position
-			$chaserLayer.add_child(noseChaser)
-			noseChaser.initalize(mouthChaser)
-			# spawn a random medium enemy if its medium or hard
-			if gameManager.difficulty == "Medium" or gameManager.difficulty == "Hard":
-				var randomMediumChaser = mediumEnemies.pick_random()
-				var mediumChaserScene = load("res://Prefabs/" + randomMediumChaser + "ChaserEnemy.tscn")
-				var mediumChaser = mediumChaserScene.instantiate()
-				
-				mediumChaser.position = $chaserLayer/enemySpawn3.position
-				if randomMediumChaser == "Eye":
-					mediumChaser.target = mouseHitbox.get_child(0)
-					$chaserLayer.add_child(mediumChaser)
-					mediumChaser.chase()
-				else:
-					$chaserLayer.add_child(mediumChaser)
-				
-				# rng check for if the nose should lock onto the new medium chaser
-				if randi_range(0,1) == 1:
-					noseChaser.chaserToChase = mediumChaser
-				# spawn a random hard enemy if its hard
-				if gameManager.difficulty == "Hard":
-					var randomHardChaser = hardEnemies.pick_random()
-					var hardChaserScene = load("res://Prefabs/" + randomHardChaser + "ChaserEnemy.tscn")
-					var hardChaser = hardChaserScene.instantiate()
-					
-					hardChaser.position = $chaserLayer/enemySpawn4.position
-					hardChaser.target = mouseHitbox.get_child(0)
-					$chaserLayer.add_child(hardChaser)
-					if randomHardChaser == "EvilMan":
-						hardChaser.chase()
-					
-					# rng check for if the nose should lock onto evil man
-					if randi_range(0,1) == 1 and randomHardChaser == "EvilMan":
-						noseChaser.chaserToChase = hardChaser
-		else:
-			# extreme difficulty: spawn every chaser
-			# TODO: this sucks. when gamemode recode happens make
-			# a spawnChaser function
-			var mouthChaser = load("res://Prefabs/MouthChaserEnemy.tscn").instantiate()
-			var noseChaser = load("res://Prefabs/NoseChaserEnemy.tscn").instantiate()
-			var eyeChaser = load("res://Prefabs/EyeChaserEnemy.tscn").instantiate()
-			var earChaser = load("res://Prefabs/EarChaserEnemy.tscn").instantiate()
-			var ritalinChaser = load("res://Prefabs/RitalinChaserEnemy.tscn").instantiate()
-			var groniChaser = load("res://Prefabs/GroniChaserEnemy.tscn").instantiate()
-			var evilManChaser = load("res://Prefabs/EvilManChaserEnemy.tscn").instantiate()
-			
-			mouthChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,5))).position
-			noseChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,5))).position
-			eyeChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,5))).position
-			earChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,5))).position
-			ritalinChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,5))).position
-			groniChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,5))).position
-			evilManChaser.position = $chaserLayer.get_node("enemySpawn" + str(randi_range(1,5))).position
-			
-			eyeChaser.target = mouseHitbox.get_child(0)
-			ritalinChaser.target = mouseHitbox.get_child(0)
-			groniChaser.target = mouseHitbox.get_child(0)
-			evilManChaser.target = mouseHitbox.get_child(0)
-			
-			$chaserLayer.add_child(mouthChaser)
-			$chaserLayer.add_child(noseChaser)
-			$chaserLayer.add_child(eyeChaser)
-			$chaserLayer.add_child(earChaser)
-			$chaserLayer.add_child(ritalinChaser)
-			$chaserLayer.add_child(groniChaser)
-			$chaserLayer.add_child(evilManChaser)
-			
-			mouthChaser.chase()
-			eyeChaser.chase()
-			evilManChaser.chase()
-			
-			match randi_range(0,3):
-				0:
-					noseChaser.initalize(mouthChaser)
-				1:
-					noseChaser.initalize(eyeChaser)
-				2:
-					noseChaser.initalize(earChaser)
-				3:
-					noseChaser.initalize(evilManChaser)
 
 # setup the minefield when script loads
 func _ready():
@@ -317,12 +217,6 @@ func _ready():
 	if gameManager.hideGameTimer == true:
 		timerLabel.hide()
 	
-	# hide the chaser layer if the gamemode isn't enemies, hide the mouse if it is
-	if gameManager.gamemode != "Enemies":
-		$chaserLayer.hide()
-	else:
-		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
-	
 	# connect the game over signal
 	if !gameManager.is_connected("gameOver", onGameOverSignal):
 		gameManager.gameOver.connect(onGameOverSignal)
@@ -347,6 +241,9 @@ func _process(_delta):
 			# get the tile coordinates in the grid
 			var clickedTile = coverLayer.local_to_map(localMousePos)
 			
+			# click event: general click
+			gameManager.emit_signal("clickEvent", globalMousePos, clickedTile, "generalClick")
+			
 			# handles uncovering and flagging tiles
 			if isValid(clickedTile.x, clickedTile.y) and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(-1,-1) and gameManager.gameState == "playing":
 				if Input.is_action_just_pressed("revealTile") and coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
@@ -355,13 +252,14 @@ func _process(_delta):
 					gameManager.emit_signal("tileRevealed", gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x], "normalReveal")
 					if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] != -1:
 						gameManager.tilesLeft -= 1
-						# ENEMIES GAMEMODE: signal for action happening for Dr Ear
-						if gameManager.gamemode == "Enemies":
-							gameManager.emit_signal("clickEvent", mouseHitbox.get_global_mouse_position())
+						# click event: tile reveal
+						gameManager.emit_signal("clickEvent", globalMousePos, clickedTile, "tileReveal")
 						if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
 							revealNeighbors(clickedTile.x, clickedTile.y)
 					else:
 						gameManager.minesClicked += 1
+						# click event: mine reveal
+						gameManager.emit_signal("clickEvent", globalMousePos, clickedTile, "mineReveal")
 						# global toggle for if the game should end when mine hit
 						if gameManager.gameEndWhenMineHit == true:
 							gameOver(clickedTile)
@@ -369,9 +267,8 @@ func _process(_delta):
 							numberLayer.set_cell(clickedTile, 0, Vector2i(3, 1), 0)
 							changeFlagAmount(-1)
 				elif Input.is_action_just_pressed("flagTile"):
-					# ENEMIES GAMEMODE: signal for action happening for Dr Ear
-					if gameManager.gamemode == "Enemies":
-						gameManager.emit_signal("clickEvent", mouseHitbox.get_global_mouse_position())
+					# click event: tile flagged
+					gameManager.emit_signal("clickEvent", globalMousePos, clickedTile, "tileFlagged")
 					if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 						if flagsLeft > 0:
 							changeFlagAmount(-1)
@@ -385,16 +282,14 @@ func _process(_delta):
 				gameManager.tilesLeft -= 1
 				# emit a signal when tile revealed normally
 				gameManager.emit_signal("tileRevealed", gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x], "firstTile")
+				# click event: first reveal
+				gameManager.emit_signal("clickEvent", globalMousePos, clickedTile, "firstReveal")
 				if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
 					revealNeighbors(clickedTile.x, clickedTile.y)
 			
 			# ^^^ runs if the above code makes the tilesLeft hit 0
 			if gameManager.tilesLeft <= 0:
 				winGame()
-	
-	# ENEMIES GAMEMODE: give the mouse cursor a hitbox
-	if gameManager.gamemode == "Enemies":
-		mouseHitbox.global_position = mouseHitbox.get_global_mouse_position()
 	
 	# timer code for the top right timer
 	if gameManager.gameState == "playing" and gameManager.hideGameTimer == false:
@@ -415,12 +310,6 @@ func _on_new_board_pressed():
 func _on_main_menu_pressed():
 	transitionManager.transitionType = transitionManager.state.FADE
 	transitionManager.load_scene(gameManager.titleScreen)
-
-# lose the game when a chaser is hit
-func _on_mouse_hitbox_area_entered(area):
-	if gameManager.gameState == "playing":
-		if area.is_in_group("Enemy"):
-			gameOver(Vector2i(-1, -1))
 
 # signal which loses the game when called, used with gamemodes
 func onGameOverSignal(lossTile):

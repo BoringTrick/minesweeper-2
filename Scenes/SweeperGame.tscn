@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dtobkxcuvlafg"]
+[gd_scene load_steps=14 format=3 uid="uid://dtobkxcuvlafg"]
 
 [ext_resource type="Script" uid="uid://bt4v6eksvjqka" path="res://Scripts/SweeperGame.gd" id="1_p5k5w"]
 [ext_resource type="TileSet" uid="uid://guejpwtmoju1" path="res://GameObjects/Tilemaps/SweeperTiles.tres" id="2_ve1wu"]
@@ -12,7 +12,6 @@
 [ext_resource type="Texture2D" uid="uid://bk124ygy2eifp" path="res://Assets/Backgrounds/Stars/5.png" id="10_ijicj"]
 [ext_resource type="Texture2D" uid="uid://vk5a7ohiip8e" path="res://Assets/Backgrounds/Stars/6.png" id="11_tv152"]
 [ext_resource type="Texture2D" uid="uid://dolr88nwmwxht" path="res://Assets/Backgrounds/Stars/7.png" id="12_8nmbw"]
-[ext_resource type="Texture2D" uid="uid://cotocdbo057g5" path="res://Assets/Static/Mouse.png" id="15_1jkco"]
 
 [sub_resource type="AnimatedTexture" id="AnimatedTexture_efvxm"]
 frames = 8
@@ -32,9 +31,6 @@ frame_6/texture = ExtResource("11_tv152")
 frame_6/duration = 1.0
 frame_7/texture = ExtResource("12_8nmbw")
 frame_7/duration = 1.0
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1jkco"]
-radius = 10.714287
 
 [node name="sweeperRoot" type="Node2D"]
 script = ExtResource("1_p5k5w")
@@ -91,24 +87,6 @@ grow_vertical = 2
 texture = SubResource("AnimatedTexture_efvxm")
 stretch_mode = 1
 
-[node name="chaserLayer" type="CanvasLayer" parent="."]
-layer = 3
-
-[node name="enemySpawn1" type="Node2D" parent="chaserLayer"]
-position = Vector2(39, 606)
-
-[node name="enemySpawn2" type="Node2D" parent="chaserLayer"]
-position = Vector2(1100, 604)
-
-[node name="enemySpawn3" type="Node2D" parent="chaserLayer"]
-position = Vector2(579, 604)
-
-[node name="enemySpawn4" type="Node2D" parent="chaserLayer"]
-position = Vector2(280, 605)
-
-[node name="enemySpawn5" type="Node2D" parent="chaserLayer"]
-position = Vector2(813, 605)
-
 [node name="endMenuLayer" type="CanvasLayer" parent="."]
 layer = 4
 
@@ -157,31 +135,5 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 27
 text = "Return to Title"
 
-[node name="mouseLayer" type="CanvasLayer" parent="."]
-layer = 5
-
-[node name="mouseHitbox" type="Area2D" parent="mouseLayer"]
-top_level = true
-z_index = 10
-z_as_relative = false
-position = Vector2(30, -42)
-
-[node name="collisionShape2d" type="CollisionShape2D" parent="mouseLayer/mouseHitbox"]
-position = Vector2(6.9999995, 12.999999)
-rotation = -0.33330753
-scale = Vector2(0.9263611, 1.04)
-shape = SubResource("CapsuleShape2D_1jkco")
-
-[node name="textureRect" type="TextureRect" parent="mouseLayer/mouseHitbox"]
-texture_filter = 1
-offset_left = -3.0
-offset_top = -3.0
-offset_right = 22.0
-offset_bottom = 26.0
-mouse_filter = 2
-texture = ExtResource("15_1jkco")
-metadata/_edit_use_anchors_ = true
-
 [connection signal="pressed" from="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/newBoard" to="." method="_on_new_board_pressed"]
 [connection signal="pressed" from="endMenuLayer/endMenu/vBoxContainer/marginContainer/vBoxContainer/mainMenu" to="." method="_on_main_menu_pressed"]
-[connection signal="area_entered" from="mouseLayer/mouseHitbox" to="." method="_on_mouse_hitbox_area_entered"]

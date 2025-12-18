@@ -4,9 +4,11 @@ extends Area2D
 @onready var crosshair = $crosshair
 @onready var chaserLine = $chaserLine
 
-# can be changed by the sweeper game script
+# this can be changed by the gamemode script
 @export var turnSpeed : float = 0.85
-@export var target : CollisionShape2D = null
+
+# the chaser's name!
+@export var chaserName = "Evil Man"
 
 var targetPos : Vector2
 var startPos : Vector2
@@ -15,24 +17,26 @@ var currentDir : String = "right"
 # set up position of these when the enemy loads
 func _ready():
 	chaserLine.global_position = Vector2(0, 0)
+	chase()
 
-# chase the collision2d function
+# chase the mouse !!
 func chase():
 	var chaseDir : String
 	# small delay to make the chaser line not flash for a sec
 	await get_tree().create_timer(0.1).timeout
-	while target != null and gameManager.gameState == "playing":
+	while gameManager.gameState == "playing":
 		# check what longer direction is to the player, x or y and choose that
 		# afterwards, choose what direction the chaser needs to turn
-		if (abs(target.global_position.x - self.global_position.x) > abs(target.global_position.y - self.global_position.y)):
-			targetPos = Vector2(target.global_position.x, self.global_position.y)
-			if (target.global_position.x - self.global_position.x) >= 0:
+		var mousePos = self.get_global_mouse_position()
+		if (abs(mousePos.x - self.global_position.x) > abs(mousePos.y - self.global_position.y)):
+			targetPos = Vector2(mousePos.x, self.global_position.y)
+			if (mousePos.x - self.global_position.x) >= 0:
 				chaseDir = "right"
 			else:
 				chaseDir = "left"
 		else:
-			targetPos = Vector2(self.global_position.x, target.global_position.y)
-			if (target.global_position.y - self.global_position.y) >= 0:
+			targetPos = Vector2(self.global_position.x, mousePos.y)
+			if (mousePos.y - self.global_position.y) >= 0:
 				chaseDir = "down"
 			else:
 				chaseDir = "up"
@@ -70,7 +74,7 @@ func chase():
 			await get_tree().create_timer(.25).timeout
 		
 		# another check if the game is still active
-		if target != null and gameManager.gameState == "playing":
+		if gameManager.gameState == "playing":
 			
 			# chase to the target
 			var tweenSpeed = ((self.global_position - targetPos).length()) / 1500

@@ -6,8 +6,11 @@ extends Area2D
 @onready var warningTimer = $warningTimer
 @onready var chaserLine = $chaserLine
 
-# can be changed by the sweeper game script
+# can be changed by the gamemode script
 @export var attackInterval : float = 3.0
+
+# the chaser's name!
+@export var chaserName = "Mr. Mouth"
 
 var targetPos : Vector2
 
@@ -16,8 +19,9 @@ func _ready():
 	chaserLine.global_position = Vector2(0, 0)
 	attackTimer.wait_time = attackInterval
 	warningTimer.wait_time = attackInterval - 0.80
+	chase()
 
-# chase a random point on the screen
+# chase a random point on the screen function
 func chase():
 	# small delay to make the chaser line not flash for a sec
 	await get_tree().create_timer(0.01).timeout

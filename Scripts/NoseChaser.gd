@@ -4,7 +4,11 @@ extends Area2D
 @onready var crosshair = $crosshair
 @onready var chaserLine = $chaserLine
 
+# the chaser mr nose should chase (only dr ear, evil man, mr eye, and mr nose are working)
 @export var chaserToChase : Area2D
+
+# the chaser's name!
+@export var chaserName = "Mr. Nose"
 
 func _ready():
 	# Only connect the signal if it isn't already connected.

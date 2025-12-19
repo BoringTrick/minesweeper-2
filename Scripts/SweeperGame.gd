@@ -177,10 +177,13 @@ func _ready():
 	gameManager.gameEndWhenMineHit = true
 	gameManager.hideGameTimer = false
 	
-	# load in the current gamemode
+	# load in the current gamemode, fallback to classic if gamemode doesn't exist
 	if gameManager.gamemode != "Classic":
-		gamemodeScene = load("res://GameModes/" + str(gameManager.gamemode) + ".tscn").instantiate()
-		self.add_child(gamemodeScene)
+		if ResourceLoader.exists("res://GameModes/" + str(gameManager.gamemode) + ".tscn"):
+			gamemodeScene = load("res://GameModes/" + str(gameManager.gamemode) + ".tscn").instantiate()
+			self.add_child(gamemodeScene)
+		else:
+			gameManager.gamemode = "Classic"
 	
 	# set up the tiles left to win the game and reset mines clicked
 	gameManager.tilesLeft = (gameManager.xSize * gameManager.ySize) - gameManager.mineCount

@@ -87,7 +87,7 @@ func spawnChaser(chaser, spawnPos):
 
 # --SIGNALS--
 
-# stop the timer if the game ends or wins, start it when playing
+# run the setup enemies function when the game starts
 func onGameStateChange():
 	if gameManager.gameState == "playing":
 		setupEnemies()

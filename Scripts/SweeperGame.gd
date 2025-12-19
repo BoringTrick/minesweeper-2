@@ -66,23 +66,20 @@ func addMine(clickedTile):
 	if gridArray[(mineY * gameManager.xSize) + mineX] == -1 or Vector2i(mineX, mineY) == clickedTile:
 		addMine(clickedTile)
 	else:
-		# extreme difficulty: first tile should be a 0
-		if gameManager.difficulty != "Extreme":
-			gridArray[(mineY * gameManager.xSize) + mineX] = -1
+		# make sure first tile is a 0
+		var mineIsInRange = false
+		for d in range(0, 8, 1):
+			var newRow = clickedTile.x + dx[d]
+			var newCol = clickedTile.y + dy[d]
+			if (isValid(newRow, newCol)):
+				# if a mine is found in range set to true
+				if Vector2i(mineX, mineY) == Vector2i(newRow, newCol):
+					mineIsInRange = true
+		# recurse if a mine was within start tile range
+		if mineIsInRange == true:
+			addMine(clickedTile)
 		else:
-			var mineIsInRange = false
-			for d in range(0, 8, 1):
-				var newRow = clickedTile.x + dx[d]
-				var newCol = clickedTile.y + dy[d]
-				if (isValid(newRow, newCol)):
-					# if a mine is found in range set to true
-					if Vector2i(mineX, mineY) == Vector2i(newRow, newCol):
-						mineIsInRange = true
-			# recurse if a mine was within start tile range
-			if mineIsInRange == true:
-				addMine(clickedTile)
-			else:
-				gridArray[(mineY * gameManager.xSize) + mineX] = -1
+			gridArray[(mineY * gameManager.xSize) + mineX] = -1
 
 # set common stats for the end screen for winning and losing
 # also accesses current gamemode for stats if applicable

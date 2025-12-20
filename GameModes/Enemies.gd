@@ -98,3 +98,6 @@ func _on_mouse_hitbox_area_entered(area):
 		if area.is_in_group("Enemy"):
 			chaserKill = area.chaserName
 			gameManager.emit_signal("gameOver", Vector2i(-1, -1))
+			# for any chasers which do something special when killing
+			if area.has_method("onKill"):
+				area.onKill()

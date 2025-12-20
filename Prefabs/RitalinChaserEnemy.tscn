@@ -129,3 +129,9 @@ animation = &"bottom"
 [node name="collisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_sf34y")
 debug_color = Color(1, 0, 0.0864689, 0.42)
+
+[node name="quipTimer" type="Timer" parent="."]
+wait_time = 15.0
+one_shot = true
+
+[connection signal="timeout" from="quipTimer" to="." method="_on_quip_timer_timeout"]

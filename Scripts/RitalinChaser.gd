@@ -5,9 +5,17 @@ extends Area2D
 
 # can be changed by the gamemode script
 @export var maxSpeed = 225
+@export var quipLowerChance = 15
+@export var quipUpperChance = 30
 
 # the chaser's name!
 @export var chaserName = "Dr. Ritalin"
+
+# when the game starts, set ritalin's quip timer
+# and play his first quip
+func _ready():
+	$quipTimer.start(randf_range(quipLowerChance,quipUpperChance))
+	audioManager.playSFX(AudioStreamWAV.load_from_file("res://Assets/SFX/RitalinSpawn.wav"))
 
 # main logic loop for chasing the mouse
 func _process(_delta):
@@ -17,7 +25,7 @@ func _process(_delta):
 		# calculate what angle dr ritalin is from the target
 		# and change his facing angle accordingly
 		var facingAngle = (self.get_global_mouse_position() - self.global_position).angle() + PI # add PI so there arent negative values
-		facingAngle += PI/8 # shift a bit so left bound doesn;t need to be checked twice
+		facingAngle += PI/8 # shift a bit so left bound doesn't need to be checked twice
 		if facingAngle < PI/4:
 			sprite.play("left")
 		elif facingAngle < PI/2:
@@ -49,3 +57,15 @@ func _process(_delta):
 			movementTween.kill()
 			movementTween = null
 		sprite.play("center")
+
+# play a death quip, called from enemies gamemode
+func onKill():
+	$quipTimer.stop()
+	audioManager.playSFX(AudioStreamWAV.load_from_file("res://Assets/SFX/RitalinCatch" + str(randi_range(1,4)) + ".wav"))
+
+# whenever the quip timer expires play a quip if game is running
+# and restart timer
+func _on_quip_timer_timeout():
+	if gameManager.gameState == "playing":
+		audioManager.playSFX(AudioStreamWAV.load_from_file("res://Assets/SFX/RitalinCommon" + str(randi_range(1,4)) + ".wav"))
+		$quipTimer.start(randf_range(quipLowerChance,quipUpperChance))

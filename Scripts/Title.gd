@@ -49,6 +49,8 @@ func updateLabel():
 				difficultyLabel.text += "\nTier 1, 2, and 3\nEnemies"
 			elif gameManager.difficulty == "Extreme":
 				difficultyLabel.text += "\nAll Enemies present!"
+		"Debug":
+			gamemodeDetails.text = "test gamemode :)"
 
 # when button pressed functions, most are self explanitory
 func _on_open_play_menu_pressed():
@@ -95,6 +97,8 @@ func _on_gamemode_item_selected(index):
 			gameManager.gamemode = "Timed"
 		2:
 			gameManager.gamemode = "Enemies"
+		3:
+			gameManager.gamemode = "Debug"
 	updateLabel()
 
 # open the controls menu

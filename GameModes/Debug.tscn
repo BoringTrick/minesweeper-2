@@ -1,0 +1,61 @@
+[gd_scene load_steps=4 format=3 uid="uid://dfrvju8fnfa5g"]
+
+[ext_resource type="Script" uid="uid://cujjcp7y144u" path="res://GameModes/Debug.gd" id="1_bw4oy"]
+[ext_resource type="Texture2D" uid="uid://cotocdbo057g5" path="res://Assets/Static/Mouse.png" id="2_hca7f"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rsroh"]
+radius = 10.714287
+
+[node name="debug" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bw4oy")
+
+[node name="chaserLayer" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="enemySpawn1" type="Node2D" parent="chaserLayer"]
+position = Vector2(39, 606)
+
+[node name="enemySpawn2" type="Node2D" parent="chaserLayer"]
+position = Vector2(1100, 604)
+
+[node name="enemySpawn3" type="Node2D" parent="chaserLayer"]
+position = Vector2(579, 604)
+
+[node name="enemySpawn4" type="Node2D" parent="chaserLayer"]
+position = Vector2(280, 605)
+
+[node name="enemySpawn5" type="Node2D" parent="chaserLayer"]
+position = Vector2(813, 605)
+
+[node name="mouseLayer" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="mouseHitbox" type="Area2D" parent="mouseLayer"]
+top_level = true
+z_index = 10
+z_as_relative = false
+position = Vector2(30, -42)
+
+[node name="collisionShape2d" type="CollisionShape2D" parent="mouseLayer/mouseHitbox"]
+position = Vector2(6.9999995, 12.999999)
+rotation = -0.33330753
+scale = Vector2(0.9263611, 1.04)
+shape = SubResource("CapsuleShape2D_rsroh")
+
+[node name="textureRect" type="TextureRect" parent="mouseLayer/mouseHitbox"]
+texture_filter = 1
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 22.0
+offset_bottom = 26.0
+mouse_filter = 2
+texture = ExtResource("2_hca7f")
+metadata/_edit_use_anchors_ = true
+
+[connection signal="area_entered" from="mouseLayer/mouseHitbox" to="." method="_on_mouse_hitbox_area_entered"]

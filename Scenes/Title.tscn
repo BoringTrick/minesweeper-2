@@ -148,13 +148,15 @@ layout_mode = 2
 alignment = 1
 selected = 0
 fit_to_longest_item = false
-item_count = 3
+item_count = 4
 popup/item_0/text = "Classic"
 popup/item_0/id = 0
 popup/item_1/text = "Timed"
 popup/item_1/id = 1
 popup/item_2/text = "Enemies"
 popup/item_2/id = 2
+popup/item_3/text = "Debug"
+popup/item_3/id = 3
 
 [node name="gamemodeDetails" type="Label" parent="titleUI/playPanel/VBoxContainer/MarginContainer2/HBoxContainer/VBoxContainer2"]
 layout_mode = 2

@@ -24,11 +24,14 @@ func _ready():
 	warningTimer.wait_time = attackInterval - 0.80
 	# small delay to make the chaser line not flash for a sec
 	await get_tree().create_timer(0.01).timeout
-	var screenSize = get_viewport().get_visible_rect().size
-	# set first target pos
-	targetPos =  Vector2(randi_range(0, screenSize.x), randi_range(0, screenSize.y))
-	attackTimer.start()
-	warningTimer.start()
+	if gameManager.gameState == "playing":
+		chaserLine.visible = true
+		crosshair.visible = true
+		var screenSize = get_viewport().get_visible_rect().size
+		# set first target pos
+		targetPos =  Vector2(randi_range(0, screenSize.x), randi_range(0, screenSize.y))
+		attackTimer.start()
+		warningTimer.start()
 
 # constantly make the first point the chaser's position
 func _process(_delta):
@@ -39,8 +42,6 @@ func _process(_delta):
 		else:
 			chaserLine.set_point_position(1, targetPos)
 		crosshair.global_position = targetPos
-		chaserLine.visible = true
-		crosshair.visible = true
 
 # play the warning animation when the warning needs to happen
 func _on_warning_timer_timeout():
@@ -69,6 +70,12 @@ func _on_attack_timer_timeout():
 		targetPos =  Vector2(randi_range(0, screenSize.x), randi_range(0, screenSize.y))
 		attackTimer.start()
 		warningTimer.start()
+		# small delay to make the chaser line stay visible again
+		# (and check to make sure it doesnt re-enable if game ends)
+		await get_tree().create_timer(0.01).timeout
+		if gameManager.gameState == "playing":
+			chaserLine.visible = true
+			crosshair.visible = true
 
 # set to inactive when the game ends
 func onGameOver(_tile):

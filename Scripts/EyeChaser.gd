@@ -17,9 +17,9 @@ var startPos : Vector2
 
 # set up position of these when the enemy loads
 func _ready():
-	# connect the game over signal
-	if !gameManager.is_connected("gameOver", onGameOver):
-		gameManager.gameOver.connect(onGameOver)
+	# connect state change signal
+	if !gameManager.is_connected("gameStateChanged", onStateChange):
+		gameManager.gameStateChanged.connect(onStateChange)
 	chaserLine.global_position = Vector2(0, 0)
 	attackTimer.wait_time = attackInterval
 	warningTimer.wait_time = attackInterval - 0.80
@@ -74,13 +74,14 @@ func _on_attack_timer_timeout():
 			chaserLine.visible = true
 			crosshair.visible = true
 
-# set to inactive when the game ends
-func onGameOver(_tile):
-	attackTimer.stop()
-	warningTimer.stop()
-	chaserLine.visible = false
-	crosshair.visible = false
-	# prevent index out of bounds error
-	if chaserLine.get_point_count() == 2:
-		chaserLine.remove_point(1)
-	sprite.play("inactive")
+# set to inactive when the state changes from playing
+func onStateChange():
+	if gameManager.gameState != "playing" and gameManager.previousState == "playing":
+		attackTimer.stop()
+		warningTimer.stop()
+		chaserLine.visible = false
+		crosshair.visible = false
+		# prevent index out of bounds error
+		if chaserLine.get_point_count() == 2:
+			chaserLine.remove_point(1)
+		sprite.play("inactive")

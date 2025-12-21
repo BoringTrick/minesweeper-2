@@ -109,4 +109,5 @@ points = PackedVector2Array(0, 0)
 texture = ExtResource("4_jkd24")
 texture_mode = 1
 
+[connection signal="timeout" from="attackTimer" to="." method="_on_attack_timer_timeout"]
 [connection signal="timeout" from="warningTimer" to="." method="_on_warning_timer_timeout"]

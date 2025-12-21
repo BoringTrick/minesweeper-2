@@ -13,18 +13,19 @@ extends Area2D
 var targetPos : Vector2
 var startPos : Vector2
 var currentDir : String = "right"
+var isChasing = true
 
 # set up position of these when the enemy loads
 func _ready():
 	chaserLine.global_position = Vector2(0, 0)
-	chase()
+	# small delay to make the chaser line not flash for a sec
+	await get_tree().create_timer(0.1).timeout
+	isChasing = false
 
 # chase the mouse !!
 func chase():
 	var chaseDir : String
-	# small delay to make the chaser line not flash for a sec
-	await get_tree().create_timer(0.1).timeout
-	while gameManager.gameState == "playing":
+	if gameManager.gameState == "playing":
 		# check what longer direction is to the player, x or y and choose that
 		# afterwards, choose what direction the chaser needs to turn
 		var mousePos = self.get_global_mouse_position()
@@ -89,7 +90,11 @@ func chase():
 		chaserLine.visible = false
 		crosshair.visible = false
 		sprite.play("idle")
+	isChasing = false
 
 # constantly make the first point the chaser's position
-func _physics_process(_delta):
+func _process(_delta):
 	chaserLine.points[0] = self.global_position
+	if gameManager.gameState == "playing" and isChasing == false:
+		isChasing = true
+		chase()

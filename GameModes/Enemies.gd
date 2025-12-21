@@ -13,6 +13,10 @@ var chaserKill = "None"
 func _ready():
 	if !gameManager.is_connected("gameStateChanged", onGameStateChange):
 		gameManager.gameStateChanged.connect(onGameStateChange)
+	if gameManager.difficulty != "Extreme":
+		audioManager.queueMusic("enemies")
+	else:
+		audioManager.queueMusic("enemiesExtreme", -7.0)
 
 # sets up the enemies on the board, called once the game begins
 func setupEnemies():

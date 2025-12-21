@@ -118,6 +118,8 @@ func gameOver(incorrectTile):
 		endMenuStats.text += "\nIncorrect Flags: " + str(incorrectFlags)
 		if gameManager.gamemode != "Classic":
 			endMenuStats.text += gamemodeScene.endScreenText("ended")
+		audioManager.queueMusic("loss")
+		audioManager.playMusic()
 		endMenu.show()
 
 # runs when the game wins via uncovering every non-mine
@@ -131,6 +133,8 @@ func winGame():
 		if gameManager.gamemode != "Classic":
 			endMenuStats.text += gamemodeScene.endScreenText("won")
 		populateEndScreen()
+		audioManager.queueMusic("win")
+		audioManager.playMusic()
 		endMenu.show()
 
 # this function fills out the board, with the clickedTile being safe
@@ -164,6 +168,8 @@ func populateBoard(clickedTile):
 				numberLayer.set_cell(Vector2i(x, y), 0, Vector2i(2, 1), 0)
 	# set the game to be active after everything's generated
 	gameManager.updateState("playing")
+	# play the queued game music
+	audioManager.playMusic()
 
 # setup the minefield when script loads
 func _ready():
@@ -174,6 +180,10 @@ func _ready():
 	gameManager.gameEndWhenMineHit = true
 	gameManager.hideGameTimer = false
 	
+	# queue the pre game music and play it, then queue the board music. queued so gamemodes can overwrite it
+	audioManager.queueMusic("preBoard")
+	audioManager.playMusic()
+	audioManager.queueMusic("board")
 	# load in the current gamemode, fallback to classic if gamemode doesn't exist
 	if gameManager.gamemode != "Classic":
 		if ResourceLoader.exists("res://GameModes/" + str(gameManager.gamemode) + ".tscn"):
@@ -255,20 +265,26 @@ func _process(_delta):
 						# click event: tile reveal
 						gameManager.emit_signal("clickEvent", globalMousePos, clickedTile, "tileReveal")
 						if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
+							audioManager.playSFX(AudioStreamWAV.load_from_file("res://Assets/SFX/reveal0.wav"))
 							revealNeighbors(clickedTile.x, clickedTile.y)
+						else:
+							audioManager.playSFX(AudioStreamWAV.load_from_file("res://Assets/SFX/revealTile.wav"), 0.0, (0.9 + (float(gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x]) * 0.1)))
 					else:
 						gameManager.minesClicked += 1
 						# click event: mine reveal
 						gameManager.emit_signal("clickEvent", globalMousePos, clickedTile, "mineReveal")
 						# global toggle for if the game should end when mine hit
 						if gameManager.gameEndWhenMineHit == true:
+							audioManager.playSFX(AudioStreamWAV.load_from_file("res://Assets/SFX/mineReveal.wav"))
 							gameOver(clickedTile)
 						else:
+							audioManager.playSFX(AudioStreamWAV.load_from_file("res://Assets/SFX/mineRevealNoKill.wav"))
 							numberLayer.set_cell(clickedTile, 0, Vector2i(3, 1), 0)
 							changeFlagAmount(-1)
 				elif Input.is_action_just_pressed("flagTile"):
 					# click event: tile flagged
 					gameManager.emit_signal("clickEvent", globalMousePos, clickedTile, "tileFlagged")
+					audioManager.playSFX(AudioStreamWAV.load_from_file("res://Assets/SFX/flagTile.wav"))
 					if coverLayer.get_cell_atlas_coords(clickedTile) != Vector2i(1,1):
 						if flagsLeft > 0:
 							changeFlagAmount(-1)
@@ -285,7 +301,10 @@ func _process(_delta):
 				# click event: first reveal
 				gameManager.emit_signal("clickEvent", globalMousePos, clickedTile, "firstReveal")
 				if gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x] == 0:
+					audioManager.playSFX(AudioStreamWAV.load_from_file("res://Assets/SFX/reveal0.wav"))
 					revealNeighbors(clickedTile.x, clickedTile.y)
+				else:
+					audioManager.playSFX(AudioStreamWAV.load_from_file("res://Assets/SFX/revealTile.wav"), 0.0, (0.9 + (float(gridArray[(clickedTile.y * gameManager.xSize) + clickedTile.x]) * 0.1)))
 			
 			# ^^^ runs if the above code makes the tilesLeft hit 0
 			if gameManager.tilesLeft <= 0:

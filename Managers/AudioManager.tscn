@@ -10,3 +10,5 @@ script = ExtResource("1_xxcej")
 [node name="sfxStreamPlayer" type="AudioStreamPlayer" parent="."]
 
 [node name="uiStreamPlayer" type="AudioStreamPlayer" parent="."]
+
+[connection signal="finished" from="musicStreamPlayer" to="." method="_on_music_stream_player_finished"]

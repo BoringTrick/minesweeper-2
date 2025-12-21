@@ -20,6 +20,7 @@ func _ready():
 	# set up the timer
 	timer.wait_time = gameManager.timedStartTime
 	timerLabel.text = "%02d.%02d" % [int($timer.wait_time) % 60, fmod($timer.wait_time, 1) * 100]
+	audioManager.queueMusic("timed")
 
 # handles timer queue, the timer on screen, and losing if you 
 # hit a mine and run out of time

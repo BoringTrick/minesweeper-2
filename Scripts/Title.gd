@@ -82,7 +82,7 @@ func _on_hard_select_pressed():
 	gameManager.xSize = 30
 	gameManager.ySize = 16
 	gameManager.mineCount = 99
-	# secret extreme difficulty accessible via clicking hard 10 times
+	# secret extreme difficulty accessible via clicking hard 5 times
 	timesHardClicked += 1
 	updateLabel()
 
@@ -125,3 +125,5 @@ func _ready():
 	gameManager.gamemode = "Classic"
 	updateLabel()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	audioManager.queueMusic("title")
+	audioManager.playMusic()
